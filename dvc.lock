@@ -1,0 +1,17 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python prepare.py
+    deps:
+    - path: data/train.csv
+      md5: d0d12f53a232828404431f2416df09fe
+      size: 33430132
+    params:
+      params.yaml:
+        basic:
+          vocab_size: 30000
+          min_freq: 3
+    outs:
+    - path: outputs/vocab.plk
+      md5: 624acb836dddb480147919b7899fc5a3
+      size: 966831
