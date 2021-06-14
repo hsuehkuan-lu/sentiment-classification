@@ -1,0 +1,3 @@
+basic:
+  vocab_size: 30000
+  min_freq: 3
