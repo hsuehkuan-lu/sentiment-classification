@@ -1,3 +1,9 @@
+gpu: 0
+
 basic:
   vocab_size: 30000
   min_freq: 3
+
+
+train:
+  batch_size: 64

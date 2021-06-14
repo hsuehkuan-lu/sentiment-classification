@@ -10,8 +10,10 @@ with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
 
 
+tokenizer = get_tokenizer('basic_english')
+
+
 def generate_vocabulary():
-    tokenizer = get_tokenizer('basic_english')
     counter = Counter()
     df = pd.read_csv('data/train.csv')
     for line in df['review']:
@@ -19,3 +21,18 @@ def generate_vocabulary():
     counter = Counter(dict(counter.most_common(PARAMS['basic']['vocab_size'])))
     vocab = Vocab(counter, min_freq=PARAMS['basic']['min_freq'])
     return vocab
+
+
+class Preprocessor(object):
+    def __init__(self, vocab):
+        super(Preprocessor, self).__init__()
+        self._vocab = vocab
+        self._tokenizer = tokenizer
+
+    def text_pipeline(self, text):
+        if isinstance(text, list):
+            return [[self._vocab[i] for i in tokenizer(t)] for t in text]
+        return [self._vocab[i] for i in tokenizer(text)]
+
+    def label_pipeline(self, label):
+        return label
