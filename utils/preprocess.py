@@ -29,6 +29,9 @@ class Preprocessor(object):
         self._vocab = vocab
         self._tokenizer = tokenizer
 
+    def __len__(self):
+        return len(self._vocab)
+
     def text_pipeline(self, text):
         if isinstance(text, list):
             return [[self._vocab[i] for i in tokenizer(t)] for t in text]

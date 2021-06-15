@@ -1,9 +1,19 @@
+seed: 123
 gpu: 0
 
 basic:
   vocab_size: 30000
   min_freq: 3
 
+model: "mlp"
 
 train:
   batch_size: 64
+  shuffle: true
+  epochs: 10
+  embed_dim: 50
+  optimizer:
+    lr: 0.01
+    step_lr: 1.0
+    kfold: 10
+    gamma: 0.1
