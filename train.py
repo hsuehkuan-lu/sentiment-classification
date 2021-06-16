@@ -1,3 +1,4 @@
+import os
 import json
 import yaml
 import numpy as np
@@ -5,6 +6,9 @@ import pandas as pd
 from sklearn.model_selection import KFold
 from data_loader.data_loaders import DataFrameDataLoader
 from training import mlp
+from dotenv import load_dotenv
+
+load_dotenv()
 
 with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
@@ -15,10 +19,9 @@ def start_training():
     df = pd.read_csv('data/train.csv')
     total_results = list()
     for idx, (train_index, valid_index) in enumerate(kf.split(df)):
-        #     print("TRAIN:", train_index, "TEST:", test_index)
         print(f"Cross validation {idx}-fold")
-        train_df = df[train_index]
-        valid_df = df[valid_index]
+        train_df = df.iloc[train_index]
+        valid_df = df.iloc[valid_index]
 
         train_dataloader = DataFrameDataLoader(
            train_df, batch_size=PARAMS['train']['batch_size'],
@@ -29,7 +32,7 @@ def start_training():
             shuffle=PARAMS['train']['shuffle']
         )
 
-        if PARAMS['model'] == 'mlp':
+        if PARAMS['model']['arch'] == 'mlp':
             trainer = mlp.MLPTrainer(
                 train_dataloader, valid_dataloader
             )
@@ -49,5 +52,5 @@ def start_training():
 
 if __name__ == '__main__':
     average_results = start_training()
-    with open('outputs/results.json', 'w') as f:
+    with open(os.getenv('RESULTS_PATH'), 'w') as f:
         json.dump(average_results, f)

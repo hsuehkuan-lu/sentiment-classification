@@ -1,6 +1,7 @@
 dvc run -n train --no-exec --force -d train.py \
-  -d data/train.csv -p train -p model \
-  -o outputs/checkpoint.pth \
-  -o outputs/config.json \
-  -M outputs/results.json \
+  -d $VOCAB_PATH -d data/train.csv \
+   -p train -p model \
+  -o $MODEL_PATH \
+  -o $CONFIG_PATH \
+  -M $RESULTS_PATH \
   python train.py

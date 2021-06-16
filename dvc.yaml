@@ -1,4 +1,8 @@
 stages:
+  build:
+    cmd: export MODEL_PATH=outputs/checkpoint.pth CONFIG_PATH=outputs/config.json
+      RESULTS_PATH=outputs/results.json
+    always_changed: true
   prepare:
     cmd: python prepare.py
     deps:

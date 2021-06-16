@@ -2,6 +2,9 @@ seed: 123
 gpu: 0
 log_interval: 500
 
+feature: sentiment
+label: review
+
 basic:
   vocab_size: 30000
   min_freq: 3
@@ -13,10 +16,10 @@ model:
 train:
   batch_size: 64
   shuffle: true
-  epochs: 10
+  epochs: 1
+  kfold: 2
   optimizer:
     lr: 0.01
     step_lr: 1.0
-    kfold: 10
     gamma: 0.1
     clip: 0.1

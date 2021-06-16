@@ -1,3 +1,4 @@
+import os
 import time
 import json
 import yaml
@@ -35,8 +36,8 @@ class MLPTrainer(TrainerBase):
         )
 
     def save_model(self):
-        torch.save(self._model.state_dict(), f'outputs/checkpoint.pth')
-        with open('outputs/config.json', 'w') as f:
+        torch.save(self._model.state_dict(), os.getenv('MODEL_PATH'))
+        with open(os.getenv('CONFIG_PATH'), 'w') as f:
             json.dump({
                 'vocab_size': self.vocab_size,
                 'num_classes': self.num_classes
