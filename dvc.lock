@@ -1,5 +1,8 @@
 schema: '2.0'
 stages:
+  build:
+    cmd: export VOCAB_PATH=outputs/vocab.plk MODEL_PATH=outputs/checkpoint.pth CONFIG_PATH=outputs/config.json
+      RESULTS_PATH=outputs/results.json SUBMISSION_PATH=outputs/submission.csv
   prepare:
     cmd: python prepare.py
     deps:
@@ -15,6 +18,62 @@ stages:
     - path: outputs/vocab.plk
       md5: 624acb836dddb480147919b7899fc5a3
       size: 966831
-  build:
-    cmd: export VOCAB_PATH=outputs/vocab.plk MODEL_PATH=outputs/checkpoint.pth CONFIG_PATH=outputs/config.json
-      RESULTS_PATH=outputs/results.json SUBMISSION_PATH=outputs/submission.csv
+  train:
+    cmd: python train.py
+    deps:
+    - path: data/train.csv
+      md5: d0d12f53a232828404431f2416df09fe
+      size: 33430132
+    - path: outputs/vocab.plk
+      md5: 624acb836dddb480147919b7899fc5a3
+      size: 966831
+    - path: train.py
+      md5: 54150eb61d8c9fdf8deb640c223d947b
+      size: 1712
+    params:
+      params.yaml:
+        model:
+          arch: mlp
+          embed_dim: 50
+        train:
+          batch_size: 64
+          shuffle: true
+          epochs: 1
+          kfold: 2
+          optimizer:
+            lr: 0.01
+            step_lr: 1.0
+            gamma: 0.1
+            clip: 0.1
+    outs:
+    - path: outputs/checkpoint.pth
+      md5: f45f706c56e7b1005146099e74d566b0
+      size: 6002253
+    - path: outputs/config.json
+      md5: 3d6a525ebbbef2edb0181acd60ad30ea
+      size: 39
+    - path: outputs/results.json
+      md5: 5f36838730e624fffce98a88f5c752ab
+      size: 129
+  inference:
+    cmd: python inference.py
+    deps:
+    - path: data/test.csv
+      md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
+      size: 33708755
+    - path: inference.py
+      md5: ffab2749e5f2dde182ab0eedb012877d
+      size: 1231
+    - path: outputs/checkpoint.pth
+      md5: f45f706c56e7b1005146099e74d566b0
+      size: 6002253
+    - path: outputs/config.json
+      md5: 3d6a525ebbbef2edb0181acd60ad30ea
+      size: 39
+    - path: outputs/vocab.plk
+      md5: 624acb836dddb480147919b7899fc5a3
+      size: 966831
+    outs:
+    - path: outputs/submission.csv
+      md5: 184aee66e3d14505eca279f96e7a4224
+      size: 394182
