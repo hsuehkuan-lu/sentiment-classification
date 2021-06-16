@@ -38,8 +38,8 @@ stages:
         train:
           batch_size: 64
           shuffle: true
-          epochs: 1
-          kfold: 2
+          epochs: 10
+          kfold: 10
           optimizer:
             lr: 0.01
             step_lr: 1.0
@@ -47,14 +47,14 @@ stages:
             clip: 0.1
     outs:
     - path: outputs/checkpoint.pth
-      md5: f45f706c56e7b1005146099e74d566b0
+      md5: 20be19430bbbf8abde43ae4f66624c9d
       size: 6002253
     - path: outputs/config.json
       md5: 3d6a525ebbbef2edb0181acd60ad30ea
       size: 39
     - path: outputs/results.json
-      md5: 5f36838730e624fffce98a88f5c752ab
-      size: 129
+      md5: 4b41211b4342a19243a85e2632b006aa
+      size: 127
   inference:
     cmd: python inference.py
     deps:
@@ -65,7 +65,7 @@ stages:
       md5: ffab2749e5f2dde182ab0eedb012877d
       size: 1231
     - path: outputs/checkpoint.pth
-      md5: f45f706c56e7b1005146099e74d566b0
+      md5: 20be19430bbbf8abde43ae4f66624c9d
       size: 6002253
     - path: outputs/config.json
       md5: 3d6a525ebbbef2edb0181acd60ad30ea
@@ -75,5 +75,5 @@ stages:
       size: 966831
     outs:
     - path: outputs/submission.csv
-      md5: 184aee66e3d14505eca279f96e7a4224
+      md5: 03d7f9f2deb729ad0fbf990bb1fd4515
       size: 394182
