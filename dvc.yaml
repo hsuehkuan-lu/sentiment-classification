@@ -11,3 +11,28 @@ stages:
     - basic
     outs:
     - outputs/vocab.plk
+  train:
+    cmd: python train.py
+    deps:
+    - data/train.csv
+    - outputs/vocab.plk
+    - train.py
+    params:
+    - model
+    - train
+    outs:
+    - outputs/checkpoint.pth
+    - outputs/config.json
+    metrics:
+    - outputs/results.json:
+        cache: false
+  inference:
+    cmd: python inference.py
+    deps:
+    - data/test.csv
+    - inference.py
+    - outputs/checkpoint.pth
+    - outputs/config.json
+    - outputs/vocab.plk
+    outs:
+    - outputs/submission.csv
