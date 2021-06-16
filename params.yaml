@@ -6,6 +6,7 @@ basic:
   min_freq: 3
 
 model: "mlp"
+log_interval: 500
 
 train:
   batch_size: 64
@@ -17,3 +18,4 @@ train:
     step_lr: 1.0
     kfold: 10
     gamma: 0.1
+    clip: 0.1

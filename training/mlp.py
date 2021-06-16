@@ -1,7 +1,9 @@
 import time
 import yaml
 import torch
+import pathlib
 import numpy as np
+from tqdm import tqdm
 from sklearn.metrics import precision_recall_fscore_support
 import torch.nn.functional as F
 from model.mlp import MLPModel
@@ -31,25 +33,32 @@ class MLPTrainer(TrainerBase):
             self.num_classes
         )
 
+    def save_model(self):
+        pathlib.Path('data/models').mkdir(parents=True, exist_ok=True)
+        torch.save(self._model.state_dict(), 'data/models/model.pth')
+
     def _train_epoch(self, epoch):
         self._model.train()
         total_acc, total_count = 0, 0
-        log_interval = 500
+        log_interval = PARAMS['log_interval']
         start_time = time.time()
 
-        for idx, (label, text, offsets) in enumerate(dataloader):
-            optimizer.zero_grad()
-            predited_label = model(text, offsets)
-            loss = criterion(predited_label, F.one_hot(label, num_classes=num_class).type(torch.FloatTensor))
+        for idx, (label, text, offsets) in enumerate(tqdm(self._train_dataloader)):
+            self._optimizer.zero_grad()
+            predicted_label = self._model(text, offsets)
+            # BCELoss
+            loss = self._criterion(
+                predicted_label, F.one_hot(label, num_classes=self.num_classes).type(torch.FloatTensor)
+            )
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 0.1)
-            optimizer.step()
-            total_acc += (predited_label.argmax(1) == label).sum().item()
+            torch.nn.utils.clip_grad_norm_(self._model.parameters(), PARAMS['train']['optimizer']['clip'])
+            self._optimizer.step()
+            total_acc += (predicted_label.argmax(1) == label).sum().item()
             total_count += label.size(0)
             if idx % log_interval == 0 and idx > 0:
                 elapsed = time.time() - start_time
-                print('| epoch {:3d} | {:5d}/{:5d} batches '
-                      '| accuracy {:8.3f}'.format(epoch, idx, len(dataloader),
+                print('| epoch {:3d} | elapsed {} | {:5d}/{:5d} batches '
+                      '| accuracy {:8.3f}'.format(epoch, elapsed, idx, len(self._train_dataloader),
                                                   total_acc / total_count))
                 total_acc, total_count = 0, 0
                 start_time = time.time()
@@ -66,6 +75,7 @@ class MLPTrainer(TrainerBase):
             else:
                 total_f1 = results['f1-score']
                 best_results = results
+                self.save_model()
             print('-' * 59)
             print(
                 '| end of epoch {:3d} | time: {:5.2f}s | '

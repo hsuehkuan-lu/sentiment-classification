@@ -1,9 +1,8 @@
-import time
+import json
 import yaml
-import torch
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import KFold
-from utils import preprocess
 from data_loader.data_loaders import DataFrameDataLoader
 from training import mlp
 
@@ -37,12 +36,18 @@ def start_training():
         else:
             raise NotImplemented
 
-        trainer.train()
-        total_acc += [cross_acc]
-    print(total_acc)
-    print(np.mean(total_acc))
+        results = trainer.train()
+        total_results += [results]
+    print(total_results)
+
+    average_results = dict()
+    for score in ('accuracy', 'precision', 'recall', 'f1-score'):
+        average_results[score] = np.mean([results[score] for results in total_results])
+    print(average_results)
+    return average_results
 
 
 if __name__ == '__main__':
-    vocab = preprocess.generate_vocabulary()
-    torch.save(vocab, 'outputs/vocab.plk')
+    average_results = start_training()
+    with open('results.json', 'w') as f:
+        json.dump(average_results, f)
