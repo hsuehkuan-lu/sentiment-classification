@@ -16,5 +16,5 @@ stages:
       md5: 624acb836dddb480147919b7899fc5a3
       size: 966831
   build:
-    cmd: export MODEL_PATH=outputs/checkpoint.pth CONFIG_PATH=outputs/config.json
-      RESULTS_PATH=outputs/results.json
+    cmd: export VOCAB_PATH=outputs/vocab.plk MODEL_PATH=outputs/checkpoint.pth CONFIG_PATH=outputs/config.json
+      RESULTS_PATH=outputs/results.json SUBMISSION_PATH=outputs/submission.csv
