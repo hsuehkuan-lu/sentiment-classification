@@ -1,4 +1,5 @@
 import time
+import json
 import yaml
 import torch
 import pathlib
@@ -29,13 +30,17 @@ class MLPTrainer(TrainerBase):
 
     def init_model(self):
         return MLPModel(
-            self.vocab_size, PARAMS['train']['embed_dim'],
+            self.vocab_size, PARAMS['model']['embed_dim'],
             self.num_classes
         )
 
     def save_model(self):
-        pathlib.Path('data/models').mkdir(parents=True, exist_ok=True)
-        torch.save(self._model.state_dict(), 'data/models/model.pth')
+        torch.save(self._model.state_dict(), f'outputs/checkpoint.pth')
+        with open('outputs/config.json', 'w') as f:
+            json.dump({
+                'vocab_size': self.vocab_size,
+                'num_classes': self.num_classes
+            }, f)
 
     def _train_epoch(self, epoch):
         self._model.train()

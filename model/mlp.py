@@ -2,10 +2,10 @@ from torch import nn
 
 
 class MLPModel(nn.Module):
-    def __init__(self, vocab_size, embed_dim, num_class):
+    def __init__(self, vocab_size, embed_dim, num_classes):
         super(MLPModel, self).__init__()
         self.embedding = nn.EmbeddingBag(vocab_size, embed_dim, sparse=True)
-        self.fc = nn.Linear(embed_dim, num_class)
+        self.fc = nn.Linear(embed_dim, num_classes)
         self.init_weights()
 
     def init_weights(self):

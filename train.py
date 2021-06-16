@@ -49,5 +49,5 @@ def start_training():
 
 if __name__ == '__main__':
     average_results = start_training()
-    with open('results.json', 'w') as f:
+    with open('outputs/results.json', 'w') as f:
         json.dump(average_results, f)
