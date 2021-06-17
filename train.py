@@ -25,11 +25,11 @@ def start_training():
 
         train_dataloader = DataFrameDataLoader(
            train_df, batch_size=PARAMS['train']['batch_size'],
-           shuffle=PARAMS['train']['shuffle']
+           shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS['model']['use_bag']
         )
         valid_dataloader = DataFrameDataLoader(
             valid_df, batch_size=PARAMS['train']['batch_size'],
-            shuffle=PARAMS['train']['shuffle']
+            shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS['model']['use_bag']
         )
 
         if PARAMS['model']['arch'] == 'mlp':

@@ -1,7 +1,7 @@
 import yaml
 import torch
-import itertools
 from functools import partial
+from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 from utils.preprocess import Preprocessor
 
@@ -27,23 +27,19 @@ class DataFrameDataLoader(DataLoader):
             self._device = torch.device('cpu')
 
     def collate_batch(self, batch, use_bag):
-        label_list, text_list, offsets = [], [], []
+        label_list, text_list, offsets = [], [], [0]
         for (_text, _label) in batch:
             label_list.append(_label)
-            processed_text = self._preprocessor.text_pipeline(_text)
+            processed_text = torch.tensor(self._preprocessor.text_pipeline(_text), dtype=torch.int64)
             text_list.append(processed_text)
-            offsets.append(len(processed_text))
+            offsets.append(processed_text.size(0))
         label_list = torch.tensor(label_list, dtype=torch.int64)
         if use_bag:
             offsets = torch.tensor(offsets[:-1]).cumsum(dim=0)
-            text_list = torch.tensor(list(itertools.chain.from_iterable(text_list)), dtype=torch.int64)
+            text_list = torch.cat(text_list)
         else:
-            offsets = torch.tensor(offsets, dtype=torch.int64)
-            text_list = torch.tensor(
-                [text[:PARAMS['model']['sent_len']]
-                 + [self.vocab[PARAMS['pad_token']]] * (PARAMS['model']['sent_len'] - len(text)) for text in text_list],
-                dtype=torch.int64
-            )
+            offsets = torch.tensor(offsets[1:], dtype=torch.int64)
+            text_list = pad_sequence(text_list, padding_value=self.vocab[PARAMS['pad_token']])
         return label_list.to(self._device), text_list.to(self._device), offsets.to(self._device)
 
     @property
