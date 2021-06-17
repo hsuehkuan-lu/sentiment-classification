@@ -4,6 +4,8 @@ log_interval: 500
 
 feature: review
 label: sentiment
+pad_token: "<pad>"
+unk_token: "<unk>"
 
 basic:
   vocab_size: 30000
@@ -12,6 +14,7 @@ basic:
 model:
   arch: "mlp"
   embed_dim: 50
+  sent_len: 256
 
 train:
   batch_size: 64

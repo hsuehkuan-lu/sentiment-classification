@@ -6,6 +6,8 @@ import pandas as pd
 from tqdm import tqdm
 from model import mlp
 from data_loader.data_loaders import DataFrameDataLoader
+from dotenv import load_dotenv
+load_dotenv(verbose=True)
 
 with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)

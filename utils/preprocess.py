@@ -1,5 +1,4 @@
 import yaml
-import torch
 from collections import Counter
 import pandas as pd
 from torchtext.vocab import Vocab
@@ -39,3 +38,7 @@ class Preprocessor(object):
 
     def label_pipeline(self, label):
         return label
+
+    @property
+    def vocab(self):
+        return self._vocab
