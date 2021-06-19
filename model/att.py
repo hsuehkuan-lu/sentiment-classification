@@ -1,15 +1,18 @@
+import torch
 from torch import nn
+from torch.nn import functional as F
 
 
 class Attention(nn.Module):
     # target is hidden_size
-    def __init__(self, hidden_size, mode=''):
+    def __init__(self, hidden_size, method='concat'):
         super(Attention, self).__init__()
-        if mode not in ('dot', 'general', 'concat'):
+        self.method = method
+        if self.method not in ('dot', 'general', 'concat'):
             raise NotImplemented
-        if mode == 'general':
+        if self.method == 'general':
             self.attn = nn.Linear(hidden_size, hidden_size)
-        elif mode == 'concat':
+        elif self.method == 'concat':
             self.attn = nn.Linear(2 * hidden_size, hidden_size)
             self.v = nn.Linear(hidden_size, 1, bias=False)
         self.init_weights()
@@ -22,12 +25,30 @@ class Attention(nn.Module):
         if hasattr(self, 'v'):
             self.v.weight.data.uniform_(-initrange, initrange)
 
+    def dot_score(self, hidden, encoder_output):
+        return torch.matmul(hidden, encoder_output)
 
+    def general_score(self, hidden, encoder_output):
+        attn = self.attn(encoder_output)
+        return torch.matmul(hidden, attn)
 
-    def forward(self, text, text_lengths, hidden=None):
-        emb = self.embedding(text)
-        packed = nn.utils.rnn.pack_padded_sequence(emb, text_lengths)
-        outputs, hidden = self.lstm(packed, hidden)
-        outputs, _ = nn.utils.rnn.pad_packed_sequence(outputs)
-        outputs = outputs[:, :, :self.hidden_size] + out
-        return self.fc(emb)
+    def concat_score(self, hidden, encoder_output):
+        hidden_reshape = torch.unsqueeze(hidden, dim=0).repeat(encoder_output.size(0), 1, 1)
+        attn = self.attn(torch.cat([hidden_reshape, encoder_output], dim=-1)).tanh()
+        return self.v(attn).squeeze(dim=-1)
+
+    def forward(self, hidden, encoder_output):
+        # output = [lengths x batch_size x hidden_size]
+        # hidden = [batch_size x hidden_size]
+        attn_scores = None
+        if self.method == 'dot':
+            attn_scores = self.dot_score(hidden, encoder_output)
+        elif self.method == 'general':
+            attn_scores = self.general_score(hidden, encoder_output)
+        elif self.method == 'concat':
+            attn_scores = self.concat_score(hidden, encoder_output)
+
+        # [lengths x batch_size] -> [batch_size x lengths]
+        attn_scores = attn_scores.t()
+        # return [batch_size x 1 x lengths]
+        return F.softmax(attn_scores, dim=-1).unsqueeze(1)
