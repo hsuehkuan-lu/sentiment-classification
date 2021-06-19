@@ -4,10 +4,8 @@ import yaml
 import torch
 import pandas as pd
 from tqdm import tqdm
-from model import mlp
+from model import mlp, rnn
 from data_loader.data_loaders import DataFrameDataLoader
-from dotenv import load_dotenv
-load_dotenv(verbose=True)
 
 with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
@@ -21,15 +19,21 @@ def inference():
         model = mlp.MLPModel(
             CONFIG['vocab_size'], PARAMS['model']['embed_dim'], CONFIG['num_classes']
         )
-        model.load_model(os.getenv('MODEL_PATH'))
+    elif PARAMS['model']['arch'] == 'lstm':
+        model = rnn.LSTMModel(
+            CONFIG['vocab_size'], PARAMS['model']['embed_dim'], PARAMS['model']['hidden_size'],
+            PARAMS['model']['n_layers'], PARAMS['model']['dropout'], CONFIG['num_classes'],
+            PARAMS['model']['attention_method'], CONFIG['padding_idx']
+        )
     else:
         raise NotImplemented
+    model.load_model(os.getenv('MODEL_PATH'))
 
     df = pd.read_csv('data/test.csv')
     df[PARAMS['label']] = 0
     with torch.no_grad():
         all_preds = list()
-        inference_dataloader = DataFrameDataLoader(df)
+        inference_dataloader = DataFrameDataLoader(df, use_bag=PARAMS['model']['use_bag'])
         for idx, (label, text, offsets) in enumerate(tqdm(inference_dataloader)):
             predicted_label = model(text, offsets)
             predicted_label = predicted_label.argmax(1)

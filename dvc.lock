@@ -23,57 +23,62 @@ stages:
     deps:
     - path: data/train.csv
       md5: d0d12f53a232828404431f2416df09fe
-      size: 33430132
+      size: 33400790
     - path: outputs/vocab.plk
       md5: 624acb836dddb480147919b7899fc5a3
       size: 966831
     - path: train.py
-      md5: 54150eb61d8c9fdf8deb640c223d947b
-      size: 1712
+      md5: bdf52480b52ab8388dc99701d9484244
+      size: 1951
     params:
       params.yaml:
         model:
-          arch: mlp
+          arch: lstm
           embed_dim: 50
+          use_bag: false
+          attention_method: concat
+          hidden_size: 256
+          n_layers: 2
+          dropout: 0.33
         train:
           batch_size: 64
           shuffle: true
-          epochs: 10
-          kfold: 10
+          epochs: 1
+          kfold: 2
           optimizer:
-            lr: 0.01
+            lr: 0.0001
             step_lr: 1.0
             gamma: 0.1
             clip: 0.1
     outs:
     - path: outputs/checkpoint.pth
-      md5: 20be19430bbbf8abde43ae4f66624c9d
-      size: 6002253
+      md5: f70828815944926e1336756a65592c9b
+      size: 16943883
     - path: outputs/config.json
-      md5: 3d6a525ebbbef2edb0181acd60ad30ea
-      size: 39
+      md5: 1d5e2973f00bfaf5547ce2fc59063e62
+      size: 57
     - path: outputs/results.json
-      md5: 4b41211b4342a19243a85e2632b006aa
-      size: 127
+      md5: 660e87a57ca5a93b117aa1945c4714c0
+      size: 82
   inference:
     cmd: python inference.py
     deps:
     - path: data/test.csv
       md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
-      size: 33708755
+      size: 33679413
     - path: inference.py
-      md5: ffab2749e5f2dde182ab0eedb012877d
-      size: 1231
+      md5: a9574de67dfa87f65c01c142aea3f943
+      size: 1584
     - path: outputs/checkpoint.pth
-      md5: 20be19430bbbf8abde43ae4f66624c9d
-      size: 6002253
+      md5: f70828815944926e1336756a65592c9b
+      size: 16943883
     - path: outputs/config.json
-      md5: 3d6a525ebbbef2edb0181acd60ad30ea
-      size: 39
+      md5: 1d5e2973f00bfaf5547ce2fc59063e62
+      size: 57
     - path: outputs/vocab.plk
       md5: 624acb836dddb480147919b7899fc5a3
       size: 966831
     outs:
     - path: outputs/submission.csv
-      md5: 03d7f9f2deb729ad0fbf990bb1fd4515
-      size: 394182
+      md5: 32459d71b9459c8d45b44bcd9b670ea7
+      size: 112

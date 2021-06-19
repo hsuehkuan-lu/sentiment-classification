@@ -35,11 +35,12 @@ class TrainerBase(abc.ABC):
         with open(os.getenv('CONFIG_PATH'), 'w') as f:
             json.dump({
                 'vocab_size': self.vocab_size,
-                'num_classes': self.num_classes
+                'num_classes': self.num_classes,
+                'padding_idx': self.padding_idx
             }, f)
 
     def save_model(self):
-        self._model.save_model()
+        self._model.save_model(os.getenv('MODEL_PATH'))
 
     def _train_epoch(self, epoch):
         self._model.train()
