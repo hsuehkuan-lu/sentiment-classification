@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import KFold
 from data_loader.data_loaders import DataFrameDataLoader
-from training import mlp
+from training import mlp, rnn
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -34,6 +34,10 @@ def start_training():
 
         if PARAMS['model']['arch'] == 'mlp':
             trainer = mlp.MLPTrainer(
+                train_dataloader, valid_dataloader
+            )
+        elif PARAMS['model']['arch'] == 'lstm':
+            trainer = rnn.LSTMTrainer(
                 train_dataloader, valid_dataloader
             )
         else:

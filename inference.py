@@ -21,8 +21,7 @@ def inference():
         model = mlp.MLPModel(
             CONFIG['vocab_size'], PARAMS['model']['embed_dim'], CONFIG['num_classes']
         )
-        model.load_state_dict(torch.load(os.getenv('MODEL_PATH')))
-        model.eval()
+        model.load_model(os.getenv('MODEL_PATH'))
     else:
         raise NotImplemented
 

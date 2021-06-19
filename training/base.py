@@ -1,5 +1,7 @@
+import os
 import abc
 import time
+import json
 import yaml
 import torch
 import numpy as np
@@ -17,6 +19,7 @@ class TrainerBase(abc.ABC):
         self._valid_dataloader = valid_dataloader
         self.vocab_size = self._train_dataloader.vocab_size
         self.num_classes = self._train_dataloader.num_classes
+        self.padding_idx = self._train_dataloader.vocab[PARAMS['pad_token']]
         self._model = self.init_model()
         self._criterion = torch.nn.BCEWithLogitsLoss()
         self._optimizer = torch.optim.SGD(self._model.parameters(), lr=PARAMS['train']['optimizer']['lr'])
@@ -27,6 +30,16 @@ class TrainerBase(abc.ABC):
     @abc.abstractmethod
     def init_model(self):
         raise NotImplementedError
+
+    def save_config(self):
+        with open(os.getenv('CONFIG_PATH'), 'w') as f:
+            json.dump({
+                'vocab_size': self.vocab_size,
+                'num_classes': self.num_classes
+            }, f)
+
+    def save_model(self):
+        self._model.save_model()
 
     def _train_epoch(self, epoch):
         self._model.train()
@@ -54,11 +67,8 @@ class TrainerBase(abc.ABC):
                 total_acc, total_count = 0, 0
                 start_time = time.time()
 
-    @abc.abstractmethod
-    def save_model(self):
-        raise NotImplementedError
-
     def train(self):
+        self.save_config()
         best_results = dict()
         total_f1 = None
         for epoch in range(1, PARAMS['train']['epochs'] + 1):

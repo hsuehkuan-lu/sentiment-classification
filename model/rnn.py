@@ -2,15 +2,17 @@ import torch
 from torch import nn
 from torch.nn import init
 from model.att import Attention
+from model.base import ModelBase
 
 
-class LSTMModel(nn.Module):
-    def __init__(self, vocab_size, embed_size, hidden_size, n_layers, dropout, num_classes, attention_mode):
+class LSTMModel(ModelBase):
+    def __init__(self, vocab_size, embed_size, hidden_size, n_layers, dropout, num_classes, attention_method,
+                 padding_idx):
         super(LSTMModel, self).__init__()
         self.hidden_size = hidden_size
-        self.embedding = nn.Embedding(vocab_size, embed_size, sparse=True)
+        self.embedding = nn.Embedding(vocab_size, embed_size, sparse=True, padding_idx=padding_idx)
         self.lstm = nn.LSTM(embed_size, hidden_size, n_layers, dropout=dropout, bidirectional=True)
-        self.attn = Attention(2 * hidden_size, attention_mode)
+        self.attn = Attention(2 * hidden_size, attention_method)
         self.fc = nn.Linear(2 * hidden_size, num_classes)
         self.init_weights()
 
@@ -40,4 +42,11 @@ class LSTMModel(nn.Module):
         context = torch.bmm(attn_weights, outputs.transpose(0, 1)).squeeze(1)
         pred = self.fc(context)
         pred = torch.index_select(pred, 0, torch.arange(0, sorted_idx.shape[0], dtype=torch.int64))
-        return pred, hidden
+        return pred
+
+    def load_model(self, model_path):
+        self.load_state_dict(torch.load(model_path))
+        self.eval()
+
+    def save_model(self, model_path):
+        torch.save(self.state_dict(), model_path)
