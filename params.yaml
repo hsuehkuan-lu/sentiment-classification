@@ -11,11 +11,18 @@ basic:
   vocab_size: 30000
   min_freq: 3
 
-model:
+lstm:
   arch: "lstm"
   embed_dim: 50
   use_bag: false
   attention_method: "concat"
+  hidden_size: 512
+  n_layers: 2
+  dropout: 0.33
+
+mlp:
+  embed_dim: 50
+  use_bag: true
   hidden_size: 512
   n_layers: 2
   dropout: 0.33

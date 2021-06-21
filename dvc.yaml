@@ -4,35 +4,44 @@ stages:
       RESULTS_PATH=outputs/results.json SUBMISSION_PATH=outputs/submission.csv
     always_changed: true
   prepare:
-    cmd: python prepare.py
+    cmd: python -m scripts.prepare
     deps:
+    - scripts/prepare.py
     - data/train.csv
     params:
     - basic
     outs:
     - outputs/vocab.plk
   train:
-    cmd: python train.py
-    deps:
-    - data/train.csv
-    - outputs/vocab.plk
-    - train.py
-    params:
-    - model
-    - train
-    outs:
-    - outputs/checkpoint.pth
-    - outputs/config.json
-    metrics:
-    - outputs/results.json:
-        cache: false
+    foreach: # List of simple values
+    - mlp
+    - lstm
+    - selected
+    do:
+      cmd: python -m scripts.train ${item}
+      deps:
+      - data/train.csv
+      - outputs/vocab.plk
+      - scripts/train.py
+      params:
+      - ${item}
+      metrics:
+      - outputs/${item}_results.json:
+          cache: false
+      outs:
+      - outputs/${item}_checkpoint.pth
+      - outputs/${item}_config.json
   inference:
-    cmd: python inference.py
-    deps:
-    - data/test.csv
-    - inference.py
-    - outputs/checkpoint.pth
-    - outputs/config.json
-    - outputs/vocab.plk
-    outs:
-    - outputs/submission.csv
+    foreach: # List of simple values
+    - mlp
+    - lstm
+    - selected
+    do:
+      cmd: python -m scripts.inference_${item}
+      deps:
+      - data/test.csv
+      - scripts/inference_${item}.py
+      - outputs/${item}_checkpoint.pth
+      - outputs/${item}_config.json
+      outs:
+      - outputs/${item}_submission.csv

@@ -1,20 +1,19 @@
 import os
+import sys
 import json
 import yaml
 import numpy as np
 import pandas as pd
+from pathlib import Path
 from sklearn.model_selection import KFold
 from data_loader.data_loaders import DataFrameDataLoader
 from training import mlp, rnn
-from dotenv import load_dotenv
-
-load_dotenv()
 
 with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
 
 
-def start_training():
+def start_training(method='lstm'):
     kf = KFold(n_splits=PARAMS['train']['kfold'], shuffle=True, random_state=PARAMS['seed'])
     df = pd.read_csv('data/train.csv')
     total_results = list()
@@ -25,18 +24,18 @@ def start_training():
 
         train_dataloader = DataFrameDataLoader(
            train_df, batch_size=PARAMS['train']['batch_size'],
-           shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS['model']['use_bag']
+           shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag']
         )
         valid_dataloader = DataFrameDataLoader(
             valid_df, batch_size=PARAMS['train']['batch_size'],
-            shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS['model']['use_bag']
+            shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag']
         )
 
-        if PARAMS['model']['arch'] == 'mlp':
+        if method == 'mlp':
             trainer = mlp.MLPTrainer(
                 train_dataloader, valid_dataloader
             )
-        elif PARAMS['model']['arch'] == 'lstm':
+        elif method == 'lstm':
             trainer = rnn.LSTMTrainer(
                 train_dataloader, valid_dataloader
             )
@@ -55,6 +54,8 @@ def start_training():
 
 
 if __name__ == '__main__':
-    average_results = start_training()
+    method = sys.argv[1]
+    average_results = start_training(method)
+    results_path = Path(os.getenv('OUTPUT_PATH'), f'{method}_{os.getenv("RESULTS_PATH")}')
     with open(os.getenv('RESULTS_PATH'), 'w') as f:
         json.dump(average_results, f)
