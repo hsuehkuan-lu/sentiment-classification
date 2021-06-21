@@ -2,3 +2,5 @@
 /checkpoint.pth
 /config.json
 /submission.csv
+/mlp_checkpoint.pth
+/mlp_config.json

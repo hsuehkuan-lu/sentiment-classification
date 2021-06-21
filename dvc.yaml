@@ -1,8 +1,4 @@
 stages:
-  build:
-    cmd: export VOCAB_PATH=outputs/vocab.plk MODEL_PATH=outputs/checkpoint.pth CONFIG_PATH=outputs/config.json
-      RESULTS_PATH=outputs/results.json SUBMISSION_PATH=outputs/submission.csv
-    always_changed: true
   prepare:
     cmd: python -m scripts.prepare
     deps:

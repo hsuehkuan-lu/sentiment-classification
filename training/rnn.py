@@ -22,3 +22,7 @@ class LSTMTrainer(TrainerBase):
             PARAMS['model']['n_layers'], PARAMS['model']['dropout'], self.num_classes,
             PARAMS['model']['attention_method'], self.padding_idx
         )
+
+    @property
+    def method(self):
+        return 'lstm'

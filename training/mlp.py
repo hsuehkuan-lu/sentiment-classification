@@ -16,6 +16,10 @@ class MLPTrainer(TrainerBase):
 
     def init_model(self):
         return MLPModel(
-            self.vocab_size, PARAMS['model']['embed_dim'],
-            self.num_classes
+            self.vocab_size, PARAMS[self.method]['embed_dim'], PARAMS[self.method]['hidden_size'],
+            self.num_classes, PARAMS[self.method]['dropout']
         )
+
+    @property
+    def method(self):
+        return 'mlp'

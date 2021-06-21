@@ -15,7 +15,7 @@ with open('params.yaml', 'r') as f:
 
 def start_training(method='lstm'):
     kf = KFold(n_splits=PARAMS['train']['kfold'], shuffle=True, random_state=PARAMS['seed'])
-    df = pd.read_csv('data/train.csv')
+    df = pd.read_csv('data/train.csv').iloc[:100]
     total_results = list()
     for idx, (train_index, valid_index) in enumerate(kf.split(df)):
         print(f"Cross validation {idx}-fold")
@@ -57,5 +57,5 @@ if __name__ == '__main__':
     method = sys.argv[1]
     average_results = start_training(method)
     results_path = Path(os.getenv('OUTPUT_PATH'), f'{method}_{os.getenv("RESULTS_PATH")}')
-    with open(os.getenv('RESULTS_PATH'), 'w') as f:
+    with open(results_path, 'w') as f:
         json.dump(average_results, f)

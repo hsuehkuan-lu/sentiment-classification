@@ -6,6 +6,7 @@ import yaml
 import torch
 import numpy as np
 from tqdm import tqdm
+from pathlib import Path
 from sklearn.metrics import precision_recall_fscore_support
 import torch.nn.functional as F
 
@@ -27,12 +28,18 @@ class TrainerBase(abc.ABC):
             self._optimizer, PARAMS['train']['optimizer']['step_lr'], gamma=PARAMS['train']['optimizer']['gamma']
         )
 
+    @property
+    @abc.abstractmethod
+    def method(self):
+        raise NotImplementedError
+
     @abc.abstractmethod
     def init_model(self):
         raise NotImplementedError
 
     def save_config(self):
-        with open(os.getenv('CONFIG_PATH'), 'w') as f:
+        config_path = Path(os.getenv('OUTPUT_PATH'), f'{self.method}_{os.getenv("CONFIG_PATH")}')
+        with open(config_path, 'w') as f:
             json.dump({
                 'vocab_size': self.vocab_size,
                 'num_classes': self.num_classes,
@@ -40,7 +47,8 @@ class TrainerBase(abc.ABC):
             }, f)
 
     def save_model(self):
-        self._model.save_model(os.getenv('MODEL_PATH'))
+        model_path = Path(os.getenv('OUTPUT_PATH'), f'{self.method}_{os.getenv("MODEL_PATH")}')
+        self._model.save_model(model_path)
 
     def _train_epoch(self, epoch):
         self._model.train()

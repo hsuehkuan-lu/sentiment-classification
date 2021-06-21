@@ -20,7 +20,8 @@ with open(config_path, 'r') as f:
 def inference(method='lstm'):
     if method == 'mlp':
         model = mlp.MLPModel(
-            CONFIG['vocab_size'], PARAMS[method]['embed_dim'], CONFIG['num_classes']
+            CONFIG['vocab_size'], PARAMS[method]['embed_dim'], PARAMS[method]['hidden_size'],
+            CONFIG['num_classes']
         )
     elif method == 'lstm':
         model = rnn.LSTMModel(
@@ -30,9 +31,10 @@ def inference(method='lstm'):
         )
     else:
         raise NotImplemented
-    model.load_model(os.getenv('MODEL_PATH'))
+    model_path = Path(os.getenv('OUTPUT_PATH'), f'{sys.argv[1]}_{os.getenv("MODEL_PATH")}')
+    model.load_model(model_path)
 
-    df = pd.read_csv('data/test.csv')
+    df = pd.read_csv('data/test.csv').iloc[:100]
     df[PARAMS['label']] = 0
     with torch.no_grad():
         all_preds = list()
