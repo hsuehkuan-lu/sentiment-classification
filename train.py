@@ -41,7 +41,7 @@ def start_training():
                 train_dataloader, valid_dataloader
             )
         else:
-            raise NotImplemented
+            raise NotImplementedError
 
         results = trainer.train()
         total_results += [results]

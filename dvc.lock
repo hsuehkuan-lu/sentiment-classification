@@ -50,6 +50,38 @@ stages:
             step_lr: 1.0
             gamma: 0.1
             clip: 0.1
+  train_selected:
+    cmd: python train.py
+    deps:
+    - path: data/train.csv
+      md5: d0d12f53a232828404431f2416df09fe
+      size: 33400790
+    - path: outputs/vocab.plk
+      md5: 624acb836dddb480147919b7899fc5a3
+      size: 966831
+    - path: train.py
+      md5: bdf52480b52ab8388dc99701d9484244
+      size: 1951
+    params:
+      params.yaml:
+        model:
+          arch: lstm
+          embed_dim: 50
+          use_bag: false
+          attention_method: concat
+          hidden_size: 256
+          n_layers: 2
+          dropout: 0.33
+        train:
+          batch_size: 64
+          shuffle: true
+          epochs: 1
+          kfold: 2
+          optimizer:
+            lr: 0.0001
+            step_lr: 1.0
+            gamma: 0.1
+            clip: 0.1
     outs:
     - path: outputs/checkpoint.pth
       md5: f70828815944926e1336756a65592c9b
