@@ -15,7 +15,7 @@ with open('params.yaml', 'r') as f:
 
 def start_training(method='lstm'):
     kf = KFold(n_splits=PARAMS['train']['kfold'], shuffle=True, random_state=PARAMS['seed'])
-    df = pd.read_csv('data/train.csv').iloc[:100]
+    df = pd.read_csv('data/train.csv').iloc[:5]
     total_results = list()
     for idx, (train_index, valid_index) in enumerate(kf.split(df)):
         print(f"Cross validation {idx}-fold")

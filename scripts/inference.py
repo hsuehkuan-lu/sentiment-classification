@@ -34,7 +34,7 @@ def inference(method='lstm'):
     model_path = Path(os.getenv('OUTPUT_PATH'), f'{sys.argv[1]}_{os.getenv("MODEL_PATH")}')
     model.load_model(model_path)
 
-    df = pd.read_csv('data/test.csv').iloc[:100]
+    df = pd.read_csv('data/test.csv').iloc[:5]
     df[PARAMS['label']] = 0
     with torch.no_grad():
         all_preds = list()

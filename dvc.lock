@@ -143,3 +143,34 @@ stages:
     - path: outputs/mlp_results.json
       md5: f168dd5c4aaa61a5b329343a306749f0
       size: 113
+  train@lstm:
+    cmd: python -m scripts.train lstm
+    deps:
+    - path: data/train.csv
+      md5: d0d12f53a232828404431f2416df09fe
+      size: 33430132
+    - path: outputs/vocab.plk
+      md5: 624acb836dddb480147919b7899fc5a3
+      size: 966831
+    - path: scripts/train.py
+      md5: f334da3224ebfb3cbed685f72763a722
+      size: 2031
+    params:
+      params.yaml:
+        lstm:
+          embed_dim: 50
+          use_bag: false
+          attention_method: concat
+          hidden_size: 512
+          n_layers: 2
+          dropout: 0.33
+    outs:
+    - path: outputs/lstm_checkpoint.pth
+      md5: e0e3c55b22e84459f3bf585dbbbae576
+      size: 48851723
+    - path: outputs/lstm_config.json
+      md5: 1d5e2973f00bfaf5547ce2fc59063e62
+      size: 57
+    - path: outputs/lstm_results.json
+      md5: c5cbeeb749aec5163d57aad0fb62d400
+      size: 82

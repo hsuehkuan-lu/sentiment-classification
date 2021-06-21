@@ -18,9 +18,9 @@ class LSTMTrainer(TrainerBase):
 
     def init_model(self):
         return LSTMModel(
-            self.vocab_size, PARAMS['model']['embed_dim'], PARAMS['model']['hidden_size'],
-            PARAMS['model']['n_layers'], PARAMS['model']['dropout'], self.num_classes,
-            PARAMS['model']['attention_method'], self.padding_idx
+            self.vocab_size, PARAMS[self.method]['embed_dim'], PARAMS[self.method]['hidden_size'],
+            PARAMS[self.method]['n_layers'], PARAMS[self.method]['dropout'], self.num_classes,
+            PARAMS[self.method]['attention_method'], self.padding_idx
         )
 
     @property

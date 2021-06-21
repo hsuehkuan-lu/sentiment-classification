@@ -4,3 +4,5 @@
 /submission.csv
 /mlp_checkpoint.pth
 /mlp_config.json
+/lstm_checkpoint.pth
+/lstm_config.json
