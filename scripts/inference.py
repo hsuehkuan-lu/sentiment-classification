@@ -52,4 +52,4 @@ if __name__ == '__main__':
     df = inference(method)
     df = df[['ID', PARAMS['label']]]
     submission_path = Path(os.getenv('OUTPUT_PATH'), f'{method}_{os.getenv("SUBMISSION_PATH")}')
-    df.to_csv(submission_path)
+    df.to_csv(submission_path, index=False)
