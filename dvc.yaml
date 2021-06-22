@@ -33,10 +33,10 @@ stages:
     - lstm
     - selected
     do:
-      cmd: python -m scripts.inference_${item}
+      cmd: python -m scripts.inference ${item}
       deps:
       - data/test.csv
-      - scripts/inference_${item}.py
+      - scripts/inference.py
       - outputs/${item}_checkpoint.pth
       - outputs/config.json
       outs:

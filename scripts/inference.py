@@ -12,7 +12,7 @@ from data_loader.data_loaders import DataFrameDataLoader
 with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
 
-config_path = Path(os.getenv('OUTPUT_PATH'), f'{sys.argv[1]}_{os.getenv("CONFIG_PATH")}')
+config_path = Path(os.getenv('OUTPUT_PATH'), os.getenv('CONFIG_PATH'))
 with open(config_path, 'r') as f:
     CONFIG = json.load(f)
 

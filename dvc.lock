@@ -78,3 +78,22 @@ stages:
     - path: outputs/lstm_results.json
       md5: c5cbeeb749aec5163d57aad0fb62d400
       size: 82
+  inference@mlp:
+    cmd: python -m scripts.inference mlp
+    deps:
+    - path: data/test.csv
+      md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
+      size: 33708755
+    - path: outputs/config.json
+      md5: 1d5e2973f00bfaf5547ce2fc59063e62
+      size: 57
+    - path: outputs/mlp_checkpoint.pth
+      md5: 4272ec6322ca930bd27e176e49f934fa
+      size: 7162229
+    - path: scripts/inference.py
+      md5: 41b21e3ba34b0d226a45bf0e5d19c76c
+      size: 1877
+    outs:
+    - path: outputs/mlp_submission.csv
+      md5: 31384dd52dc3825eb06562eff9595eae
+      size: 394182
