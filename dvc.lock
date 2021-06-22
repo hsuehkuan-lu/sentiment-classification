@@ -7,8 +7,8 @@ stages:
       md5: d0d12f53a232828404431f2416df09fe
       size: 33430132
     - path: scripts/prepare.py
-      md5: 88c5db6ca73827fb2053aebf6a7164d3
-      size: 258
+      md5: 8aabc58263855bc558a233c10ce6f14f
+      size: 420
     params:
       params.yaml:
         basic:
@@ -24,12 +24,15 @@ stages:
     - path: data/train.csv
       md5: d0d12f53a232828404431f2416df09fe
       size: 33430132
+    - path: outputs/config.json
+      md5: 1d5e2973f00bfaf5547ce2fc59063e62
+      size: 57
     - path: outputs/vocab.plk
       md5: 624acb836dddb480147919b7899fc5a3
       size: 966831
     - path: scripts/train.py
-      md5: b2cb2d5444ba14da8941896bd143c78c
-      size: 2033
+      md5: c6e493028f07f8ba8996dfe458cbc7db
+      size: 2891
     params:
       params.yaml:
         mlp:
@@ -39,14 +42,11 @@ stages:
           dropout: 0.1
     outs:
     - path: outputs/mlp_checkpoint.pth
-      md5: 7477de0089df21c5684b8e420c88398c
+      md5: 4272ec6322ca930bd27e176e49f934fa
       size: 7162229
-    - path: outputs/mlp_config.json
-      md5: 1d5e2973f00bfaf5547ce2fc59063e62
-      size: 57
     - path: outputs/mlp_results.json
-      md5: f168dd5c4aaa61a5b329343a306749f0
-      size: 113
+      md5: 3961ddfa06cac953161f699a49f3932a
+      size: 127
   train@lstm:
     cmd: python -m scripts.train lstm
     deps:

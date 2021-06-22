@@ -49,7 +49,3 @@ class DataFrameDataLoader(DataLoader):
     @property
     def vocab_size(self):
         return len(self._preprocessor)
-
-    @property
-    def num_classes(self):
-        return len(set([label for (text, label) in self._data_iter]))

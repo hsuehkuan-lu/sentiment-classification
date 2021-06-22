@@ -7,15 +7,42 @@ import pandas as pd
 from pathlib import Path
 from sklearn.model_selection import KFold
 from data_loader.data_loaders import DataFrameDataLoader
-from training import mlp, rnn
+from model import (
+    mlp as mlp_model,
+    rnn as rnn_model
+)
+from training import (
+    mlp as mlp_trainer,
+    rnn as rnn_trainer
+)
+
 
 with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
 
 
+config_path = Path(os.getenv('OUTPUT_PATH'), os.getenv('CONFIG_PATH'))
+with open(config_path, 'r') as f:
+    CONFIG = json.load(f)
+
+
 def start_training(method='lstm'):
+    if method == 'mlp':
+        model = mlp_model.MLPModel(
+            CONFIG['vocab_size'], PARAMS[method]['embed_dim'], PARAMS[method]['hidden_size'],
+            CONFIG['num_classes'], PARAMS[method]['dropout']
+        )
+    elif method == 'lstm':
+        model = rnn_model.LSTMModel(
+            CONFIG['vocab_size'], PARAMS[method]['embed_dim'], PARAMS[method]['hidden_size'],
+            PARAMS[method]['n_layers'], PARAMS[method]['dropout'], CONFIG['num_classes'],
+            PARAMS[method]['attention_method'], CONFIG['padding_idx']
+        )
+    else:
+        raise NotImplementedError
+
     kf = KFold(n_splits=PARAMS['train']['kfold'], shuffle=True, random_state=PARAMS['seed'])
-    df = pd.read_csv('data/train.csv').iloc[:5]
+    df = pd.read_csv('data/train.csv')
     total_results = list()
     for idx, (train_index, valid_index) in enumerate(kf.split(df)):
         print(f"Cross validation {idx}-fold")
@@ -32,12 +59,12 @@ def start_training(method='lstm'):
         )
 
         if method == 'mlp':
-            trainer = mlp.MLPTrainer(
-                train_dataloader, valid_dataloader
+            trainer = mlp_trainer.MLPTrainer(
+                model, train_dataloader, valid_dataloader
             )
         elif method == 'lstm':
-            trainer = rnn.LSTMTrainer(
-                train_dataloader, valid_dataloader
+            trainer = rnn_trainer.LSTMTrainer(
+                model, train_dataloader, valid_dataloader
             )
         else:
             raise NotImplementedError

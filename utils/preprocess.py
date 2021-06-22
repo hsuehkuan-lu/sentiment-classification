@@ -15,11 +15,17 @@ tokenizer = get_tokenizer('basic_english')
 def generate_vocabulary():
     counter = Counter()
     df = pd.read_csv('data/train.csv')
-    for line in df['review']:
+    for line in df[PARAMS['feature']]:
         counter.update(tokenizer(line))
+    num_classes = len(set([label for label in df[PARAMS['label']]]))
     counter = Counter(dict(counter.most_common(PARAMS['basic']['vocab_size'])))
     vocab = Vocab(counter, min_freq=PARAMS['basic']['min_freq'])
-    return vocab
+    config = {
+        'vocab_size': len(vocab),
+        'num_classes': num_classes,
+        'padding_idx': vocab[PARAMS['pad_token']]
+    }
+    return vocab, config
 
 
 class Preprocessor(object):

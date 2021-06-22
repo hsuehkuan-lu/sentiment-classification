@@ -18,6 +18,7 @@ stages:
       deps:
       - data/train.csv
       - outputs/vocab.plk
+      - outputs/config.json
       - scripts/train.py
       params:
       - ${item}
@@ -26,7 +27,6 @@ stages:
           cache: false
       outs:
       - outputs/${item}_checkpoint.pth
-      - outputs/${item}_config.json
   inference:
     foreach: # List of simple values
     - mlp
@@ -38,6 +38,6 @@ stages:
       - data/test.csv
       - scripts/inference_${item}.py
       - outputs/${item}_checkpoint.pth
-      - outputs/${item}_config.json
+      - outputs/config.json
       outs:
       - outputs/${item}_submission.csv

@@ -14,14 +14,16 @@ with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
 
 
+config_path = Path(os.getenv('OUTPUT_PATH'), os.getenv('CONFIG_PATH'))
+with open(config_path, 'r') as f:
+    CONFIG = json.load(f)
+
+
 class TrainerBase(abc.ABC):
-    def __init__(self, train_dataloader, valid_dataloader=None):
+    def __init__(self, model, train_dataloader, valid_dataloader=None):
         self._train_dataloader = train_dataloader
         self._valid_dataloader = valid_dataloader
-        self.vocab_size = self._train_dataloader.vocab_size
-        self.num_classes = self._train_dataloader.num_classes
-        self.padding_idx = self._train_dataloader.vocab[PARAMS['pad_token']]
-        self._model = self.init_model()
+        self._model = model
         self._criterion = torch.nn.BCEWithLogitsLoss()
         self._optimizer = torch.optim.SGD(self._model.parameters(), lr=PARAMS['train']['optimizer']['lr'])
         self._scheduler = torch.optim.lr_scheduler.StepLR(
@@ -32,19 +34,6 @@ class TrainerBase(abc.ABC):
     @abc.abstractmethod
     def method(self):
         raise NotImplementedError
-
-    @abc.abstractmethod
-    def init_model(self):
-        raise NotImplementedError
-
-    def save_config(self):
-        config_path = Path(os.getenv('OUTPUT_PATH'), f'{self.method}_{os.getenv("CONFIG_PATH")}')
-        with open(config_path, 'w') as f:
-            json.dump({
-                'vocab_size': self.vocab_size,
-                'num_classes': self.num_classes,
-                'padding_idx': self.padding_idx
-            }, f)
 
     def save_model(self):
         model_path = Path(os.getenv('OUTPUT_PATH'), f'{self.method}_{os.getenv("MODEL_PATH")}')
@@ -61,7 +50,7 @@ class TrainerBase(abc.ABC):
             predicted_label = self._model(text, offsets)
             # BCELoss
             loss = self._criterion(
-                predicted_label, F.one_hot(label, num_classes=self.num_classes).type(torch.FloatTensor)
+                predicted_label, F.one_hot(label, num_classes=CONFIG['num_classes']).type(torch.FloatTensor)
             )
             loss.backward()
             torch.nn.utils.clip_grad_norm_(self._model.parameters(), PARAMS['train']['optimizer']['clip'])
@@ -77,7 +66,6 @@ class TrainerBase(abc.ABC):
                 start_time = time.time()
 
     def train(self):
-        self.save_config()
         best_results = dict()
         total_f1 = None
         for epoch in range(1, PARAMS['train']['epochs'] + 1):
