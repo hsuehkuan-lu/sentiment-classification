@@ -4,8 +4,8 @@ log_interval: 500
 
 feature: review
 label: sentiment
-pad_token: "<pad>"
-unk_token: "<unk>"
+pad_token: <pad>
+unk_token: <unk>
 
 basic:
   vocab_size: 30000
@@ -14,7 +14,7 @@ basic:
 lstm:
   embed_dim: 50
   use_bag: false
-  attention_method: "concat"
+  attention_method: concat
   hidden_size: 512
   n_layers: 2
   dropout: 0.33
@@ -28,7 +28,7 @@ mlp:
 selected:
   embed_dim: 50
   use_bag: false
-  attention_method: "concat"
+  attention_method: concat
   hidden_size: 512
   n_layers: 2
   dropout: 0.33
@@ -39,7 +39,7 @@ train:
   epochs: 10
   kfold: 10
   optimizer:
-    lr: 0.1
+    lr: 0.3
     step_lr: 5.0
     gamma: 0.5
     clip: 0.1
