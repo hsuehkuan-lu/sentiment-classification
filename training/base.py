@@ -45,6 +45,7 @@ class TrainerBase(abc.ABC):
         log_interval = PARAMS['log_interval']
         start_time = time.time()
 
+        total_loss = list()
         for idx, (label, text, offsets) in enumerate(tqdm(self._train_dataloader)):
             self._optimizer.zero_grad()
             predicted_label = self._model(text, offsets)
@@ -53,24 +54,31 @@ class TrainerBase(abc.ABC):
                 predicted_label, F.one_hot(label, num_classes=CONFIG['num_classes']).type(torch.FloatTensor)
             )
             loss.backward()
+            total_loss += [loss]
             torch.nn.utils.clip_grad_norm_(self._model.parameters(), PARAMS['train']['optimizer']['clip'])
             self._optimizer.step()
             total_acc += (predicted_label.argmax(1) == label).sum().item()
             total_count += label.size(0)
             if idx % log_interval == 0 and idx > 0:
                 elapsed = time.time() - start_time
-                print('| epoch {:3d} | elapsed {} | {:5d}/{:5d} batches '
-                      '| accuracy {:8.3f}'.format(epoch, elapsed, idx, len(self._train_dataloader),
+                print('| epoch {:3d} | elapsed {} | {:5d}/{:5d} batches | loss {:8.3f} '
+                      '| accuracy {:8.3f}'.format(epoch, elapsed, idx, len(self._train_dataloader), loss,
                                                   total_acc / total_count))
                 total_acc, total_count = 0, 0
                 start_time = time.time()
+        return torch.mean(torch.stack(total_loss, dim=0)).detach().numpy()
 
     def train(self):
         best_results = dict()
+        best_results['train'] = dict()
         total_f1 = None
         for epoch in range(1, PARAMS['train']['epochs'] + 1):
             epoch_start_time = time.time()
-            self._train_epoch(epoch)
+            loss = self._train_epoch(epoch)
+            best_results['train'] = {
+                'epoch': epoch,
+                'loss': loss
+            }
             results = self.evaluate()
             if total_f1 is not None and total_f1 > results['f1-score']:
                 self._scheduler.step()
@@ -80,10 +88,10 @@ class TrainerBase(abc.ABC):
                 self.save_model()
             print('-' * 59)
             print(
-                '| end of epoch {:3d} | time: {:5.2f}s | '
+                '| end of epoch {:3d} | time: {:5.2f}s | avg loss {:8.3f} |'
                 'valid accuracy {:8.3f} | precision {:8.3f} | '
                 'recall {:8.3f} | f1-score {:8.3f}'.format(
-                    epoch, time.time() - epoch_start_time, results['accuracy'],
+                    epoch, time.time() - epoch_start_time, loss, results['accuracy'],
                     results['precision'], results['recall'], results['f1-score']
                 )
             )
@@ -94,9 +102,14 @@ class TrainerBase(abc.ABC):
         self._model.eval()
         total_count = 0
         all_preds, all_labels = list(), list()
+        total_loss = list()
         with torch.no_grad():
             for idx, (label, text, offsets) in enumerate(self._valid_dataloader):
                 predicted_label = self._model(text, offsets)
+                loss = self._criterion(
+                    predicted_label, F.one_hot(label, num_classes=CONFIG['num_classes']).type(torch.FloatTensor)
+                )
+                total_loss += [loss]
                 predicted_label = predicted_label.argmax(1)
                 all_preds += [predicted_label.detach().numpy()]
                 all_labels += [label.detach().numpy()]
@@ -108,5 +121,6 @@ class TrainerBase(abc.ABC):
             'accuracy': (all_preds == all_labels).mean(),
             'precision': prf[0],
             'recall': prf[1],
-            'f1-score': prf[2]
+            'f1-score': prf[2],
+            'loss': torch.mean(torch.stack(total_loss, dim=0)).detach().numpy()
         }

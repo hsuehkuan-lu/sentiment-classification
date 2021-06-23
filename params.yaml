@@ -39,7 +39,7 @@ train:
   epochs: 10
   kfold: 10
   optimizer:
-    lr: 0.01
+    lr: 0.1
     step_lr: 5.0
     gamma: 0.5
     clip: 0.1

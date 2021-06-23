@@ -16,9 +16,9 @@ class MLPModel(ModelBase):
     def init_weights(self):
         initrange = 0.5
         self.embedding.weight.data.uniform_(-initrange, initrange)
-        self.fc1.weight.data.uniform_(-initrange, initrange)
+        nn.init.kaiming_normal_(self.fc1.weight, mode='fan_out', nonlinearity='relu')
+        nn.init.kaiming_normal_(self.fc2.weight, mode='fan_out', nonlinearity='relu')
         self.fc1.bias.data.zero_()
-        self.fc2.weight.data.uniform_(-initrange, initrange)
         self.fc2.bias.data.zero_()
         self.out.weight.data.uniform_(-initrange, initrange)
         self.out.bias.data.zero_()

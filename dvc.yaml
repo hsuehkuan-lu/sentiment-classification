@@ -22,6 +22,7 @@ stages:
       - scripts/train.py
       params:
       - ${item}
+      - train
       metrics:
       - outputs/${item}_results.json:
           cache: false
