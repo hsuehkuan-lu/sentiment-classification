@@ -43,7 +43,7 @@ def start_training(method='lstm'):
 
     kf = KFold(n_splits=PARAMS['train']['kfold'], shuffle=True, random_state=PARAMS['seed'])
     df = pd.read_csv('data/train.csv')
-    total_results = list()
+    total_results = dict()
     for idx, (train_index, valid_index) in enumerate(kf.split(df)):
         print(f"Cross validation {idx}-fold")
         train_df = df.iloc[train_index]
@@ -70,19 +70,22 @@ def start_training(method='lstm'):
             raise NotImplementedError
 
         results = trainer.train()
-        total_results += [results]
+        total_results[f'fold_{idx+1}'] = results['train']
     print(total_results)
 
     average_results = dict()
     for score in ('accuracy', 'precision', 'recall', 'f1-score'):
         average_results[score] = np.mean([results[score] for results in total_results])
     print(average_results)
-    return average_results
+    return average_results, total_results
 
 
 if __name__ == '__main__':
     method = sys.argv[1]
-    average_results = start_training(method)
+    average_results, total_results = start_training(method)
     results_path = Path(os.getenv('OUTPUT_PATH'), f'{method}_{os.getenv("RESULTS_PATH")}')
     with open(results_path, 'w') as f:
         json.dump(average_results, f)
+    plots_path = Path(os.getenv('OUTPUT_PATH'), f'{method}_{os.getenv("PLOTS_PATH")}')
+    with open(plots_path, 'w') as f:
+        json.dump(total_results, f)

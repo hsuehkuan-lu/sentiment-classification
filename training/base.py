@@ -66,20 +66,21 @@ class TrainerBase(abc.ABC):
                                                   total_acc / total_count))
                 total_acc, total_count = 0, 0
                 start_time = time.time()
-        return torch.mean(torch.stack(total_loss, dim=0)).detach().numpy()
+        return float(torch.mean(torch.stack(total_loss, dim=0)).detach().numpy())
 
     def train(self):
         best_results = dict()
-        best_results['train'] = dict()
+        best_results['train'] = list()
         total_f1 = None
         for epoch in range(1, PARAMS['train']['epochs'] + 1):
             epoch_start_time = time.time()
             loss = self._train_epoch(epoch)
-            best_results['train'] = {
-                'epoch': epoch,
-                'loss': loss
-            }
             results = self.evaluate()
+            best_results['train'].append({
+                'epoch': epoch,
+                'train_loss': loss,
+                'dev_loss': results['loss']
+            })
             if total_f1 is not None and total_f1 > results['f1-score']:
                 self._scheduler.step()
             else:
@@ -88,10 +89,11 @@ class TrainerBase(abc.ABC):
                 self.save_model()
             print('-' * 59)
             print(
-                '| end of epoch {:3d} | time: {:5.2f}s | avg loss {:8.3f} |'
+                '| end of epoch {:3d} | time: {:5.2f}s | avg loss {:8.3f} | '
+                'dev loss {:8.3f} | '
                 'valid accuracy {:8.3f} | precision {:8.3f} | '
                 'recall {:8.3f} | f1-score {:8.3f}'.format(
-                    epoch, time.time() - epoch_start_time, loss, results['accuracy'],
+                    epoch, time.time() - epoch_start_time, loss, results['loss'], results['accuracy'],
                     results['precision'], results['recall'], results['f1-score']
                 )
             )
@@ -122,5 +124,5 @@ class TrainerBase(abc.ABC):
             'precision': prf[0],
             'recall': prf[1],
             'f1-score': prf[2],
-            'loss': torch.mean(torch.stack(total_loss, dim=0)).detach().numpy()
+            'loss': float(torch.mean(torch.stack(total_loss, dim=0)).detach().numpy())
         }

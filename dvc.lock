@@ -43,7 +43,7 @@ stages:
         train:
           batch_size: 64
           shuffle: true
-          epochs: 10
+          epochs: 2
           kfold: 10
           optimizer:
             lr: 0.01
@@ -52,11 +52,11 @@ stages:
             clip: 0.1
     outs:
     - path: outputs/mlp_checkpoint.pth
-      md5: a0a5e46deb4ba352d5a911cb1e0f8cf3
+      md5: ca4be7a368563af33133d0cdba0c0ed5
       size: 7162229
     - path: outputs/mlp_results.json
-      md5: fbbdf72f7c8a6cd20f9ddf1e14f748d9
-      size: 127
+      md5: 7a15293cdb132c9b529c12538dc56351
+      size: 126
   train@lstm:
     cmd: python -m scripts.train lstm
     deps:
@@ -98,12 +98,12 @@ stages:
       md5: 1d5e2973f00bfaf5547ce2fc59063e62
       size: 57
     - path: outputs/mlp_checkpoint.pth
-      md5: a0a5e46deb4ba352d5a911cb1e0f8cf3
+      md5: ca4be7a368563af33133d0cdba0c0ed5
       size: 7162229
     - path: scripts/inference.py
       md5: f00115363b4c630e72c408b62d46d2ba
       size: 1890
     outs:
     - path: outputs/mlp_submission.csv
-      md5: 1223f5499ed67d80485235874fe2e2dd
+      md5: febe599aee49b5d7f6153d0f10985593
       size: 229245

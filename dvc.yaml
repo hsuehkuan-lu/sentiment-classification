@@ -26,6 +26,9 @@ stages:
       metrics:
       - outputs/${item}_results.json:
           cache: false
+      plots:
+      - outputs/${item}_plots.json:
+          cache: false
       outs:
       - outputs/${item}_checkpoint.pth
   inference:
