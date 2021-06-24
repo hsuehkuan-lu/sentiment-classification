@@ -42,7 +42,7 @@ def start_training(method='lstm'):
         raise NotImplementedError
 
     kf = KFold(n_splits=PARAMS['train']['kfold'], shuffle=True, random_state=PARAMS['seed'])
-    df = pd.read_csv('data/train.csv').iloc[:100]
+    df = pd.read_csv('data/train.csv')
     total_results = list()
     total_losses = list()
     for idx, (train_index, valid_index) in enumerate(kf.split(df)):
