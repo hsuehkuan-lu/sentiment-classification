@@ -39,8 +39,8 @@ class Preprocessor(object):
 
     def text_pipeline(self, text):
         if isinstance(text, list):
-            return [[self._vocab[i] for i in tokenizer(t)] for t in text]
-        return [self._vocab[i] for i in tokenizer(text)]
+            return [[self._vocab[''.join(list(filter(lambda x: x.isalnum(), i)))] for i in tokenizer(t)] for t in text]
+        return [self._vocab[''.join(list(filter(lambda x: x.isalnum(), i)))] for i in tokenizer(text)]
 
     def label_pipeline(self, label):
         return label

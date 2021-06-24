@@ -6,7 +6,7 @@ from model.base import ModelBase
 class MLPModel(ModelBase):
     def __init__(self, vocab_size, embed_dim, hidden_size, num_classes, dropout=0.1):
         super(MLPModel, self).__init__()
-        self.embedding = nn.EmbeddingBag(vocab_size, embed_dim, sparse=True)
+        self.embedding = nn.EmbeddingBag(vocab_size, embed_dim, sparse=False)
         self.dropout_layer = nn.Dropout(dropout)
         self.fc1 = nn.Linear(embed_dim, hidden_size)
         self.fc2 = nn.Linear(hidden_size, hidden_size)
