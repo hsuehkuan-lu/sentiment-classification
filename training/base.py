@@ -70,13 +70,13 @@ class TrainerBase(abc.ABC):
 
     def train(self):
         best_results = dict()
-        best_results['train'] = list()
+        losses = list()
         total_f1 = None
         for epoch in range(1, PARAMS['train']['epochs'] + 1):
             epoch_start_time = time.time()
             loss = self._train_epoch(epoch)
             results = self.evaluate()
-            best_results['train'].append({
+            losses.append({
                 'epoch': epoch,
                 'train_loss': loss,
                 'dev_loss': results['loss']
@@ -98,7 +98,7 @@ class TrainerBase(abc.ABC):
                 )
             )
             print('-' * 59)
-        return best_results
+        return best_results, losses
 
     def evaluate(self):
         self._model.eval()

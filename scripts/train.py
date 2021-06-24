@@ -42,8 +42,9 @@ def start_training(method='lstm'):
         raise NotImplementedError
 
     kf = KFold(n_splits=PARAMS['train']['kfold'], shuffle=True, random_state=PARAMS['seed'])
-    df = pd.read_csv('data/train.csv')
-    total_results = dict()
+    df = pd.read_csv('data/train.csv').iloc[:100]
+    total_results = list()
+    total_losses = list()
     for idx, (train_index, valid_index) in enumerate(kf.split(df)):
         print(f"Cross validation {idx}-fold")
         train_df = df.iloc[train_index]
@@ -69,23 +70,26 @@ def start_training(method='lstm'):
         else:
             raise NotImplementedError
 
-        results = trainer.train()
-        total_results[f'fold_{idx+1}'] = results['train']
-    print(total_results)
+        results, losses = trainer.train()
+        total_results.append(results)
+        for loss in losses:
+            loss['fold'] = idx + 1
+        total_losses += losses
+    print(total_losses)
+    total_losses_df = pd.DataFrame(total_losses, columns=['fold', 'epoch', 'train_loss', 'dev_loss'])
 
     average_results = dict()
     for score in ('accuracy', 'precision', 'recall', 'f1-score'):
         average_results[score] = np.mean([results[score] for results in total_results])
     print(average_results)
-    return average_results, total_results
+    return average_results, total_losses_df
 
 
 if __name__ == '__main__':
     method = sys.argv[1]
-    average_results, total_results = start_training(method)
+    average_results, total_losses_df = start_training(method)
     results_path = Path(os.getenv('OUTPUT_PATH'), f'{method}_{os.getenv("RESULTS_PATH")}')
     with open(results_path, 'w') as f:
         json.dump(average_results, f)
     plots_path = Path(os.getenv('OUTPUT_PATH'), f'{method}_{os.getenv("PLOTS_PATH")}')
-    with open(plots_path, 'w') as f:
-        json.dump(total_results, f)
+    total_losses_df.to_csv(plots_path, index=False)
