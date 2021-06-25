@@ -79,7 +79,8 @@ class TrainerBase(abc.ABC):
             losses.append({
                 'epoch': epoch,
                 'train_loss': loss,
-                'dev_loss': results['loss']
+                'dev_loss': results['loss'],
+                'learning_rate': self._scheduler.get_last_lr()[0]
             })
             if total_f1 is not None and total_f1 > results['f1-score']:
                 self._scheduler.step()

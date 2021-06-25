@@ -16,14 +16,20 @@ def generate_vocabulary():
     counter = Counter()
     df = pd.read_csv('data/train.csv')
     for line in df[PARAMS['feature']]:
-        counter.update(tokenizer(line))
+        counter.update([''.join(list(filter(lambda x: x.isalnum(), [ch for ch in word]))) for word in tokenizer(line)])
+    del counter['']
     num_classes = len(set([label for label in df[PARAMS['label']]]))
     counter = Counter(dict(counter.most_common(PARAMS['basic']['vocab_size'])))
-    vocab = Vocab(counter, min_freq=PARAMS['basic']['min_freq'])
+    vocab = Vocab(
+        counter, min_freq=PARAMS['basic']['min_freq'],
+        specials=(PARAMS['unk_token'], PARAMS['pad_token'], PARAMS['sos_token'], PARAMS['eos_token'])
+    )
     config = {
         'vocab_size': len(vocab),
         'num_classes': num_classes,
-        'padding_idx': vocab[PARAMS['pad_token']]
+        'padding_idx': vocab[PARAMS['pad_token']],
+        'sos_idx': vocab[PARAMS['sos_token']],
+        'eos_idx': vocab[PARAMS['eos_token']]
     }
     return vocab, config
 

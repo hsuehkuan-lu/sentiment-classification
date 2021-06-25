@@ -76,7 +76,8 @@ def start_training(method='lstm'):
             loss['fold'] = idx + 1
         total_losses += losses
     print(total_losses)
-    total_losses_df = pd.DataFrame(total_losses, columns=['fold', 'epoch', 'train_loss', 'dev_loss'])
+    columns = list(total_losses[0].keys())
+    total_losses_df = pd.DataFrame(total_losses, columns=columns)
 
     average_results = dict()
     for score in ('accuracy', 'precision', 'recall', 'f1-score'):

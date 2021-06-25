@@ -6,6 +6,8 @@ feature: review
 label: sentiment
 pad_token: <pad>
 unk_token: <unk>
+sos_token: <sos>
+eos_token: <eos>
 
 basic:
   vocab_size: 30000
