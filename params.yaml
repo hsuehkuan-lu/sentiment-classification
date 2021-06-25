@@ -36,8 +36,8 @@ selected:
 train:
   batch_size: 64
   shuffle: true
-  epochs: 10
-  kfold: 2
+  epochs: 2
+  kfold: 10
   optimizer:
     lr: 0.001
     step_lr: 1.0
