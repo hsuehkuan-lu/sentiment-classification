@@ -127,7 +127,6 @@ class TrainerBase(abc.ABC):
                 total_count += label.size(0)
         all_preds = np.concatenate(all_preds, axis=0)
         all_labels = np.concatenate(all_labels, axis=0)
-        print(all_preds, all_labels)
         prf = precision_recall_fscore_support(all_labels, all_preds, average='binary')
         return {
             'accuracy': (all_preds == all_labels).mean(),
