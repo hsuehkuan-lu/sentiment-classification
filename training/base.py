@@ -122,8 +122,8 @@ class TrainerBase(abc.ABC):
                 )
                 total_loss += [loss]
                 predicted_label = predicted_label.argmax(1)
-                all_preds += [predicted_label.detach().numpy()]
-                all_labels += [label.detach().numpy()]
+                all_preds += [predicted_label.detach().cpu().numpy()]
+                all_labels += [label.detach().cpu().numpy()]
                 total_count += label.size(0)
         all_preds = np.concatenate(all_preds, axis=0)
         all_labels = np.concatenate(all_labels, axis=0)
