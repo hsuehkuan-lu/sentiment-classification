@@ -71,12 +71,14 @@ def start_training(method='lstm'):
         valid_df = df.iloc[valid_index]
 
         train_dataloader = DataFrameDataLoader(
-           train_df, batch_size=PARAMS['train']['batch_size'],
-           shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag']
+            train_df, batch_size=PARAMS['train']['batch_size'],
+            shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag'],
+            use_eos=PARAMS[method]['use_eos']
         )
         valid_dataloader = DataFrameDataLoader(
             valid_df, batch_size=PARAMS['train']['batch_size'],
-            shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag']
+            shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag'],
+            use_eos=PARAMS[method]['use_eos']
         )
 
         if method == 'mlp':
