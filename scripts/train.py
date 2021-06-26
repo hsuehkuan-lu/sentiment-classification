@@ -18,7 +18,15 @@ from training import (
 )
 from dotenv import load_dotenv
 import logging
-logging.basicConfig(filename='logfile.log', level=logging.DEBUG)
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("debug.log"),
+        logging.StreamHandler()
+    ]
+)
 
 
 load_dotenv('envs/.env')
