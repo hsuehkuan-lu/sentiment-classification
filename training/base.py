@@ -74,7 +74,7 @@ class TrainerBase(abc.ABC):
                                                   total_acc / total_count))
                 total_acc, total_count = 0, 0
                 start_time = time.time()
-        return float(torch.mean(torch.stack(total_loss, dim=0)).detach().to(torch.device('cpu'), copy=True).numpy())
+        return float(torch.mean(torch.stack(total_loss, dim=0)).detach().cpu().numpy())
 
     def train(self):
         best_results = dict()
@@ -118,7 +118,7 @@ class TrainerBase(abc.ABC):
             for idx, (label, text, offsets) in enumerate(self._valid_dataloader):
                 predicted_label = self._model(text, offsets)
                 loss = self._criterion(
-                    predicted_label, F.one_hot(label, num_classes=CONFIG['num_classes']).type(torch.FloatTensor)
+                    predicted_label, F.one_hot(label, num_classes=CONFIG['num_classes']).type(torch.FloatTensor).to(DEVICE)
                 )
                 total_loss += [loss]
                 predicted_label = predicted_label.argmax(1)
@@ -133,5 +133,5 @@ class TrainerBase(abc.ABC):
             'precision': prf[0],
             'recall': prf[1],
             'f1-score': prf[2],
-            'loss': float(torch.mean(torch.stack(total_loss, dim=0)).detach().to(torch.device('cpu'), copy=True).numpy())
+            'loss': float(torch.mean(torch.stack(total_loss, dim=0)).detach().cpu().numpy())
         }
