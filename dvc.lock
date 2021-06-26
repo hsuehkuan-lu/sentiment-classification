@@ -7,8 +7,8 @@ stages:
       md5: d0d12f53a232828404431f2416df09fe
       size: 33430132
     - path: scripts/prepare.py
-      md5: 8aabc58263855bc558a233c10ce6f14f
-      size: 420
+      md5: 20524be787ecc0bd3158a7a4cdaf20a7
+      size: 477
     params:
       params.yaml:
         basic:
