@@ -72,4 +72,5 @@ voluptuous==0.12.1
 wcwidth==0.2.5
 xmltodict==0.12.0
 zc.lockfile==2.0
+python-dotenv==0.18.0
 dvc[gdrive]
