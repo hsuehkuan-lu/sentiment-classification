@@ -8,12 +8,16 @@ from utils.preprocess import Preprocessor
 with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
 
+if torch.cuda.is_available():
+    DEVICE = torch.device('cuda', PARAMS.get('gpu', 0))
+else:
+    DEVICE = torch.device('cpu')
+
 
 class DataFrameDataLoader(DataLoader):
     def __init__(self, df, use_bag=True, *args, **kwargs):
         # order is text, label
         self._preprocessor = None
-        self._device = None
         self.init()
         self._data_iter = list(zip(df['review'], df['sentiment']))
         collate_batch = partial(self.collate_batch, use_bag=use_bag)
@@ -21,10 +25,6 @@ class DataFrameDataLoader(DataLoader):
 
     def init(self):
         self._preprocessor = Preprocessor(torch.load('outputs/vocab.plk'))
-        if torch.cuda.is_available():
-            self._device = torch.device('cuda', PARAMS.get('gpu', 0))
-        else:
-            self._device = torch.device('cpu')
 
     def collate_batch(self, batch, use_bag):
         label_list, text_list, offsets = [], [], [0]
@@ -40,7 +40,7 @@ class DataFrameDataLoader(DataLoader):
         else:
             offsets = torch.tensor(offsets[1:], dtype=torch.int64)
             text_list = pad_sequence(text_list, padding_value=self.vocab[PARAMS['pad_token']])
-        return label_list.to(self._device), text_list.to(self._device), offsets.to(self._device)
+        return label_list.to(DEVICE), text_list.to(DEVICE), offsets.to(DEVICE)
 
     @property
     def vocab(self):

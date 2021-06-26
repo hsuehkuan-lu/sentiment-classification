@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import yaml
+import torch
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -43,6 +44,11 @@ def start_training(method='lstm'):
         )
     else:
         raise NotImplementedError
+    if torch.cuda.is_available():
+        device = torch.device('cuda', PARAMS.get('gpu', 0))
+    else:
+        device = torch.device('cpu')
+    model.to(device)
 
     kf = KFold(n_splits=PARAMS['train']['kfold'], shuffle=True, random_state=PARAMS['seed'])
     df = pd.read_csv('data/train.csv')

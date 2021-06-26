@@ -36,6 +36,11 @@ def inference(method='lstm'):
         raise NotImplemented
     model_path = Path(os.getenv('OUTPUT_PATH'), f'{sys.argv[1]}_{os.getenv("MODEL_PATH")}')
     model.load_model(model_path)
+    if torch.cuda.is_available():
+        device = torch.device('cuda', PARAMS.get('gpu', 0))
+    else:
+        device = torch.device('cpu')
+    model.to(device)
 
     df = pd.read_csv('data/test.csv')
     df[PARAMS['label']] = 0
