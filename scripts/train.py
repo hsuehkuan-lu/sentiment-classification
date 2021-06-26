@@ -17,6 +17,9 @@ from training import (
     rnn as rnn_trainer
 )
 from dotenv import load_dotenv
+import logging
+logging.basicConfig(filename='logfile.log', level=logging.DEBUG)
+
 
 load_dotenv('envs/.env')
 
@@ -97,7 +100,11 @@ def start_training(method='lstm'):
 
 if __name__ == '__main__':
     method = sys.argv[1]
-    average_results, total_losses_df = start_training(method)
+    try:
+        average_results, total_losses_df = start_training(method)
+    except Exception as e:
+        logging.error(e)
+        raise e
     results_path = Path(os.getenv('OUTPUT_PATH'), f'{method}_{os.getenv("RESULTS_PATH")}')
     with open(results_path, 'w') as f:
         json.dump(average_results, f)
