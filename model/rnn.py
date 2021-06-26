@@ -1,8 +1,17 @@
+import yaml
 import torch
 from torch import nn
 from torch.nn import init
 from model.att import Attention
 from model.base import ModelBase
+
+with open('params.yaml', 'r') as f:
+    PARAMS = yaml.safe_load(f)
+
+if torch.cuda.is_available():
+    DEVICE = torch.device('cuda', PARAMS.get('gpu', 0))
+else:
+    DEVICE = torch.device('cpu')
 
 
 class LSTMModel(ModelBase):
@@ -41,7 +50,7 @@ class LSTMModel(ModelBase):
         # attn_weights = [batch_size x 1 x lengths]
         context = torch.bmm(attn_weights, outputs.transpose(0, 1)).squeeze(1)
         pred = self.fc(context)
-        pred = torch.index_select(pred, 0, torch.arange(0, sorted_idx.shape[0], dtype=torch.int64))
+        pred = torch.index_select(pred, 0, torch.arange(0, sorted_idx.shape[0], dtype=torch.int64).to(DEVICE))
         return pred
 
     def load_model(self, model_path):
