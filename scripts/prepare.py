@@ -3,6 +3,9 @@ import json
 import torch
 from pathlib import Path
 from utils import preprocess
+from dotenv import load_dotenv
+
+load_dotenv('envs/.env')
 
 
 if __name__ == '__main__':

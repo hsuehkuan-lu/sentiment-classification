@@ -8,6 +8,9 @@ from pathlib import Path
 from tqdm import tqdm
 from model import mlp, rnn
 from data_loader.data_loaders import DataFrameDataLoader
+from dotenv import load_dotenv
+
+load_dotenv('envs/.env')
 
 with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)

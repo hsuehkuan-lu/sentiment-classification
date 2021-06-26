@@ -15,6 +15,9 @@ from training import (
     mlp as mlp_trainer,
     rnn as rnn_trainer
 )
+from dotenv import load_dotenv
+
+load_dotenv('envs/.env')
 
 
 with open('params.yaml', 'r') as f:
