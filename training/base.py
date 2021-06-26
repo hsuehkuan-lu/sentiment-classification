@@ -74,7 +74,7 @@ class TrainerBase(abc.ABC):
                                                   total_acc / total_count))
                 total_acc, total_count = 0, 0
                 start_time = time.time()
-        return float(torch.mean(torch.stack(total_loss, dim=0)).detach().numpy())
+        return float(torch.mean(torch.stack(total_loss, dim=0)).detach().cpu().numpy())
 
     def train(self):
         best_results = dict()
@@ -133,5 +133,5 @@ class TrainerBase(abc.ABC):
             'precision': prf[0],
             'recall': prf[1],
             'f1-score': prf[2],
-            'loss': float(torch.mean(torch.stack(total_loss, dim=0)).detach().numpy())
+            'loss': float(torch.mean(torch.stack(total_loss, dim=0)).detach().cpu().numpy())
         }
