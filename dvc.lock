@@ -16,23 +16,23 @@ stages:
           min_freq: 3
     outs:
     - path: outputs/vocab.plk
-      md5: 624acb836dddb480147919b7899fc5a3
-      size: 966831
+      md5: 14284264890cd690d7bad61190b39ce0
+      size: 966319
   train@mlp:
     cmd: python -m scripts.train mlp
     deps:
     - path: data/train.csv
       md5: d0d12f53a232828404431f2416df09fe
-      size: 33400790
+      size: 33430132
     - path: outputs/config.json
-      md5: 1d5e2973f00bfaf5547ce2fc59063e62
-      size: 57
+      md5: cdb8221e0e5eb1a11d5f25ff535fcc38
+      size: 85
     - path: outputs/vocab.plk
-      md5: 624acb836dddb480147919b7899fc5a3
-      size: 966831
+      md5: 14284264890cd690d7bad61190b39ce0
+      size: 966319
     - path: scripts/train.py
-      md5: 8492045328ba954093b7e1ccfc28aeb2
-      size: 3296
+      md5: ec328765c083f5df19e9795c406c76f0
+      size: 3303
     params:
       params.yaml:
         mlp:
@@ -52,14 +52,14 @@ stages:
             clip: 0.1
     outs:
     - path: outputs/mlp_checkpoint.pth
-      md5: e453809acbaf8873b9263f598080b3eb
-      size: 7162229
+      md5: 73bcf843e611db4b5bbd735c5dd57b0e
+      size: 7162613
     - path: outputs/mlp_plots.csv
-      md5: dc0d4038d758abfbd8d47bacbf798b88
-      size: 928
+      md5: 06d34830f465e5694aa7d663200d549a
+      size: 1060
     - path: outputs/mlp_results.json
-      md5: 4048b4b5b102ed7b36785e9ca880d1f5
-      size: 125
+      md5: 186caece7128c46eb28dddc57fc5223e
+      size: 126
   train@lstm:
     cmd: python -m scripts.train lstm
     deps:
@@ -96,17 +96,17 @@ stages:
     deps:
     - path: data/test.csv
       md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
-      size: 33679413
+      size: 33708755
     - path: outputs/config.json
-      md5: 1d5e2973f00bfaf5547ce2fc59063e62
-      size: 57
+      md5: cdb8221e0e5eb1a11d5f25ff535fcc38
+      size: 85
     - path: outputs/mlp_checkpoint.pth
-      md5: e453809acbaf8873b9263f598080b3eb
-      size: 7162229
+      md5: 73bcf843e611db4b5bbd735c5dd57b0e
+      size: 7162613
     - path: scripts/inference.py
       md5: f00115363b4c630e72c408b62d46d2ba
       size: 1890
     outs:
     - path: outputs/mlp_submission.csv
-      md5: ce8cc95aa4ff5b763d9b954d8b36a13f
+      md5: 85c6833410d3b88ce49755e257cb7487
       size: 229245

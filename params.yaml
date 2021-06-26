@@ -27,6 +27,13 @@ mlp:
   hidden_size: 512
   dropout: 0.1
 
+cnn:
+  embed_dim: 50
+  use_bag: false
+  hidden_size: 512
+  kernel_size: 3
+
+
 selected:
   embed_dim: 50
   use_bag: false
