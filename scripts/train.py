@@ -73,12 +73,12 @@ def start_training(method='lstm'):
         train_dataloader = DataFrameDataLoader(
             train_df, batch_size=PARAMS['train']['batch_size'],
             shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag'],
-            use_eos=PARAMS[method]['use_eos']
+            use_eos=PARAMS[method]['use_eos'], max_len=PARAMS[method].get('max_len')
         )
         valid_dataloader = DataFrameDataLoader(
             valid_df, batch_size=PARAMS['train']['batch_size'],
             shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag'],
-            use_eos=PARAMS[method]['use_eos']
+            use_eos=PARAMS[method]['use_eos'], max_len=PARAMS[method].get('max_len')
         )
 
         if method == 'mlp':

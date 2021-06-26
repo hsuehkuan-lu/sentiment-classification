@@ -15,24 +15,28 @@ else:
 
 
 class DataFrameDataLoader(DataLoader):
-    def __init__(self, df, use_bag=True, use_eos=True, *args, **kwargs):
+    def __init__(self, df, use_bag=True, use_eos=True, max_len=None, *args, **kwargs):
         # order is text, label
         self._preprocessor = None
         self.init()
         self._data_iter = list(zip(df['review'], df['sentiment']))
-        collate_batch = partial(self.collate_batch, use_bag=use_bag, use_eos=use_eos)
+        collate_batch = partial(self.collate_batch, use_bag=use_bag, use_eos=use_eos, max_len=max_len)
         super(DataFrameDataLoader, self).__init__(self._data_iter, collate_fn=collate_batch, *args, **kwargs)
 
     def init(self):
         self._preprocessor = Preprocessor(torch.load('outputs/vocab.plk'))
 
-    def collate_batch(self, batch, use_bag, use_eos):
+    def collate_batch(self, batch, use_bag, use_eos, max_len):
         label_list, text_list, offsets = [], [], [0]
         for (_text, _label) in batch:
             label_list.append(_label)
             if use_eos:
-                processed_text = torch.tensor(self._preprocessor.text_pipeline(_text)
-                                              + [self.vocab[PARAMS['eos_token']]], dtype=torch.int64)
+                if max_len:
+                    processed_text = self._preprocessor.text_pipeline(_text) + [self.vocab[PARAMS['eos_token']]]
+                    processed_text = torch.tensor(processed_text[:max_len], dtype=torch.int64)
+                else:
+                    processed_text = torch.tensor(self._preprocessor.text_pipeline(_text)
+                                                  + [self.vocab[PARAMS['eos_token']]], dtype=torch.int64)
             else:
                 processed_text = torch.tensor(self._preprocessor.text_pipeline(_text), dtype=torch.int64)
             text_list.append(processed_text)

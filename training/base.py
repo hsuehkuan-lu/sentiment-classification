@@ -62,7 +62,7 @@ class TrainerBase(abc.ABC):
                 predicted_label, F.one_hot(label, num_classes=CONFIG['num_classes']).type(torch.FloatTensor).to(DEVICE)
             )
             loss.backward()
-            total_loss += [loss]
+            total_loss += [float(loss)]
             torch.nn.utils.clip_grad_norm_(self._model.parameters(), PARAMS['train']['optimizer']['clip'])
             self._optimizer.step()
             total_acc += (predicted_label.argmax(1) == label).sum().item()
@@ -74,7 +74,7 @@ class TrainerBase(abc.ABC):
                                                   total_acc / total_count))
                 total_acc, total_count = 0, 0
                 start_time = time.time()
-        return float(torch.mean(torch.stack(total_loss, dim=0)).detach().cpu().numpy())
+        return np.mean(total_loss)
 
     def train(self):
         best_results = dict()
@@ -120,7 +120,7 @@ class TrainerBase(abc.ABC):
                 loss = self._criterion(
                     predicted_label, F.one_hot(label, num_classes=CONFIG['num_classes']).type(torch.FloatTensor).to(DEVICE)
                 )
-                total_loss += [loss]
+                total_loss += [float(loss)]
                 predicted_label = predicted_label.argmax(1)
                 all_preds += [predicted_label.detach().cpu().numpy()]
                 all_labels += [label.detach().cpu().numpy()]
@@ -133,5 +133,5 @@ class TrainerBase(abc.ABC):
             'precision': prf[0],
             'recall': prf[1],
             'f1-score': prf[2],
-            'loss': float(torch.mean(torch.stack(total_loss, dim=0)).detach().cpu().numpy())
+            'loss': np.mean(total_loss)
         }

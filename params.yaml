@@ -21,6 +21,7 @@ lstm:
   hidden_size: 512
   n_layers: 2
   dropout: 0.33
+  max_len: 512
 
 mlp:
   embed_dim: 50
