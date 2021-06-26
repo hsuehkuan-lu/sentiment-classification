@@ -19,7 +19,7 @@ class LSTMModel(ModelBase):
                  padding_idx):
         super(LSTMModel, self).__init__()
         self.hidden_size = hidden_size
-        self.embedding = nn.Embedding(vocab_size, embed_size, sparse=True, padding_idx=padding_idx)
+        self.embedding = nn.Embedding(vocab_size, embed_size, padding_idx=padding_idx)
         self.lstm = nn.LSTM(embed_size, hidden_size, n_layers, dropout=dropout, bidirectional=True)
         self.attn = Attention(2 * hidden_size, attention_method)
         self.fc = nn.Linear(2 * hidden_size, num_classes)
