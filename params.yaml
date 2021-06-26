@@ -19,8 +19,8 @@ lstm:
   use_eos: true
   attention_method: concat
   hidden_size: 512
-  n_layers: 2
-  dropout: 0.33
+  n_layers: 1
+  dropout: 0
 
 mlp:
   embed_dim: 50
@@ -44,7 +44,7 @@ selected:
   dropout: 0.33
 
 train:
-  batch_size: 64
+  batch_size: 32
   shuffle: true
   epochs: 3
   kfold: 5
