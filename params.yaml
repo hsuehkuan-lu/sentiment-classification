@@ -14,11 +14,11 @@ basic:
   min_freq: 3
 
 lstm:
-  embed_dim: 50
+  embed_dim: 128
   use_bag: false
   attention_method: concat
-  hidden_size: 256
-  n_layers: 1
+  hidden_size: 512
+  n_layers: 2
   dropout: 0.33
 
 mlp:
@@ -45,8 +45,8 @@ selected:
 train:
   batch_size: 64
   shuffle: true
-  epochs: 1
-  kfold: 2
+  epochs: 3
+  kfold: 5
   optimizer:
     lr: 0.001
     step_lr: 1.0
