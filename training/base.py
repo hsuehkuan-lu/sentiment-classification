@@ -16,6 +16,11 @@ load_dotenv('envs/.env')
 with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
 
+if torch.cuda.is_available():
+    DEVICE = torch.device('cuda', PARAMS.get('gpu', 0))
+else:
+    DEVICE = torch.device('cpu')
+
 
 config_path = Path(os.getenv('OUTPUT_PATH'), os.getenv('CONFIG_PATH'))
 with open(config_path, 'r') as f:
@@ -54,7 +59,7 @@ class TrainerBase(abc.ABC):
             predicted_label = self._model(text, offsets)
             # BCELoss
             loss = self._criterion(
-                predicted_label, F.one_hot(label, num_classes=CONFIG['num_classes']).type(torch.FloatTensor)
+                predicted_label, F.one_hot(label, num_classes=CONFIG['num_classes']).type(torch.FloatTensor).to(DEVICE)
             )
             loss.backward()
             total_loss += [loss]
