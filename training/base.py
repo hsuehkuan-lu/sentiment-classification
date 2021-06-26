@@ -9,6 +9,9 @@ from tqdm import tqdm
 from pathlib import Path
 from sklearn.metrics import precision_recall_fscore_support
 import torch.nn.functional as F
+from dotenv import load_dotenv
+
+load_dotenv('envs/.env')
 
 with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
