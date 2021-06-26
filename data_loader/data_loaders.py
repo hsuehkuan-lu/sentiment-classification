@@ -40,7 +40,7 @@ class DataFrameDataLoader(DataLoader):
         else:
             offsets = torch.tensor(offsets[1:], dtype=torch.int64)
             text_list = pad_sequence(text_list, padding_value=self.vocab[PARAMS['pad_token']])
-        return label_list.to(DEVICE), text_list.to(DEVICE), offsets
+        return label_list.to(DEVICE), text_list.to(DEVICE), offsets.to(DEVICE)
 
     @property
     def vocab(self):

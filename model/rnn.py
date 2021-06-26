@@ -32,7 +32,7 @@ class LSTMModel(ModelBase):
         sorted_lengths, sorted_idx = text_lengths.sort(descending=True)
         sorted_text = torch.index_select(text, -1, sorted_idx)
         emb = self.embedding(sorted_text)
-        packed = nn.utils.rnn.pack_padded_sequence(emb, sorted_lengths)
+        packed = nn.utils.rnn.pack_padded_sequence(emb, sorted_lengths.to(torch.device('cpu')))
         outputs, hidden = self.lstm(packed, hidden)
         hidden_state, cell_state = hidden
         hidden_state = hidden_state[-2:, :, :].view(1, -1, 2 * self.hidden_size).squeeze(0)
