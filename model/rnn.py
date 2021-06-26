@@ -39,6 +39,7 @@ class LSTMModel(ModelBase):
     def forward(self, text, text_lengths, hidden=None):
         # text = [L x B]
         sorted_lengths, sorted_idx = text_lengths.sort(descending=True)
+        _, unsorted_idx = sorted_idx.sort()
         sorted_text = torch.index_select(text, -1, sorted_idx)
         emb = self.embedding(sorted_text)
         packed = nn.utils.rnn.pack_padded_sequence(emb, sorted_lengths.to(torch.device('cpu'), copy=True))
@@ -50,7 +51,7 @@ class LSTMModel(ModelBase):
         # attn_weights = [batch_size x 1 x lengths]
         context = torch.bmm(attn_weights, outputs.transpose(0, 1)).squeeze(1)
         pred = self.fc(context)
-        pred = torch.index_select(pred, 0, torch.arange(0, sorted_idx.shape[0], dtype=torch.int64).to(DEVICE))
+        pred = torch.index_select(pred, 0, unsorted_idx)
         return pred
 
     def load_model(self, model_path):
