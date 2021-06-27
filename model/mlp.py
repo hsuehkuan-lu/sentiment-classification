@@ -19,8 +19,8 @@ class MLPModel(ModelBase):
         nn.init.kaiming_normal_(self.fc2.weight, mode='fan_out', nonlinearity='relu')
         self.fc1.bias.data.zero_()
         self.fc2.bias.data.zero_()
-        nn.init.kaiming_normal_(self.out.weight, mode='fan_out', nonlinearity='sigmoid')
-        self.out.bias.data.zero_()
+        nn.init.xavier_normal_(self.out.weight)
+        nn.init.constant(self.out.bias, 0)
 
     def forward(self, text, offsets):
         embedded = self.embedding(text, offsets)
