@@ -46,6 +46,12 @@ def start_training(method='lstm'):
         device = torch.device('cpu')
     model.to(device)
 
+    try:
+        trainer_module = importlib.import_module(f'training.{method}')
+        trainer = trainer_module.Trainer(model)
+    except Exception as e:
+        raise e
+
     kf = KFold(n_splits=PARAMS['train']['kfold'], shuffle=True, random_state=PARAMS['seed'])
     df = pd.read_csv('data/train.csv')
     total_results = list()
@@ -67,13 +73,7 @@ def start_training(method='lstm'):
             use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
         )
 
-        try:
-            trainer_module = importlib.import_module(f'training.{method}')
-            trainer = trainer_module.Trainer(
-                model, train_dataloader, valid_dataloader
-            )
-        except Exception as e:
-            raise e
+        trainer.set_dataloader(train_dataloader, valid_dataloader)
 
         results, losses, dev_loss = trainer.train(dev_loss)
         total_results.append(results)

@@ -28,15 +28,19 @@ with open(config_path, 'r') as f:
 
 
 class TrainerBase(abc.ABC):
-    def __init__(self, model, train_dataloader, valid_dataloader=None):
-        self._train_dataloader = train_dataloader
-        self._valid_dataloader = valid_dataloader
+    def __init__(self, model):
+        self._train_dataloader = None
+        self._valid_dataloader = None
         self._model = model
         self._criterion = torch.nn.BCEWithLogitsLoss()
         self._optimizer = torch.optim.SGD(self._model.parameters(), lr=PARAMS['train']['optimizer']['lr'])
         self._scheduler = torch.optim.lr_scheduler.StepLR(
             self._optimizer, PARAMS['train']['optimizer']['step_lr'], gamma=PARAMS['train']['optimizer']['gamma']
         )
+
+    def set_dataloader(self, train_dataloader, valid_dataloader=None):
+        self._train_dataloader = train_dataloader
+        self._valid_dataloader = valid_dataloader
 
     @property
     @abc.abstractmethod
