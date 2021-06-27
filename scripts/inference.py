@@ -24,7 +24,7 @@ with open(config_path, 'r') as f:
 def inference(method='lstm'):
     try:
         model_module = importlib.import_module(f'model.{method}')
-        model = model_module.Model(**CONFIG, **PARAMS)
+        model = model_module.Model(**CONFIG, **PARAMS[method])
     except Exception as e:
         raise e
     model_path = Path(os.getenv('OUTPUT_PATH'), f'{sys.argv[1]}_{os.getenv("MODEL_PATH")}')
