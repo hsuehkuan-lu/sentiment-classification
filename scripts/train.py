@@ -10,7 +10,8 @@ from sklearn.model_selection import KFold
 from data_loader.data_loaders import DataFrameDataLoader
 from model import (
     mlp as mlp_model,
-    rnn as rnn_model
+    rnn as rnn_model,
+    cnn as cnn_model
 )
 from training import (
     mlp as mlp_trainer,
@@ -53,6 +54,10 @@ def start_training(method='lstm'):
             PARAMS[method]['n_layers'], PARAMS[method]['dropout'], CONFIG['num_classes'],
             PARAMS[method]['attention_method'], CONFIG['padding_idx']
         )
+    elif method == 'cnn':
+        model = cnn_model.CNNModel(
+            **CONFIG, **PARAMS[method]
+        )
     else:
         raise NotImplementedError
     if torch.cuda.is_available():
@@ -88,6 +93,10 @@ def start_training(method='lstm'):
         elif method == 'lstm':
             trainer = rnn_trainer.LSTMTrainer(
                 model, train_dataloader, valid_dataloader
+            )
+        elif method == 'cnn':
+            trainer = cnn_trainer.CNNTrainer(
+
             )
         else:
             raise NotImplementedError
