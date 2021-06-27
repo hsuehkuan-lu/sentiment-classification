@@ -14,13 +14,13 @@ else:
 
 
 class Model(ModelBase):
-    def __init__(self, vocab_size, embed_size, hidden_size, kernel_size, n_layers, dropout, num_classes, attention_method,
-                 padding_idx):
+    def __init__(self, vocab_size, embed_dim, hidden_size, kernel_size, n_layers, dropout, num_classes,
+                 padding_idx, *args, **kwargs):
         super(Model, self).__init__()
         self.hidden_size = hidden_size
-        self.embedding = nn.Embedding(vocab_size, embed_size, padding_idx=padding_idx)
+        self.embedding = nn.Embedding(vocab_size, embed_dim, padding_idx=padding_idx)
         layers = [
-            ('conv1', nn.Conv1d(embed_size, hidden_size, kernel_size)),
+            ('conv1', nn.Conv1d(embed_dim, hidden_size, kernel_size)),
             ('drop1', nn.Dropout(dropout)),
             ('mp1', nn.MaxPool1d(kernel_size)),
             ('relu1', nn.ReLU())
@@ -51,6 +51,7 @@ class Model(ModelBase):
         # emb = [L x B x D] -> [B x D x L]
         emb = emb.permute(1, 2, 0)
         x = self.conv(emb)
+        x, _ = torch.max(x, dim=-1)
         x = self.out(x)
         return x
 

@@ -12,6 +12,7 @@ stages:
     foreach: # List of simple values
     - mlp
     - lstm
+    - cnn
     - selected
     do:
       cmd: python -m scripts.train ${item}
@@ -35,6 +36,7 @@ stages:
     foreach: # List of simple values
     - mlp
     - lstm
+    - cnn
     - selected
     do:
       cmd: python -m scripts.inference ${item}

@@ -15,12 +15,12 @@ else:
 
 
 class Model(ModelBase):
-    def __init__(self, vocab_size, embed_size, hidden_size, n_layers, dropout, num_classes, attention_method,
-                 padding_idx):
+    def __init__(self, vocab_size, embed_dim, hidden_size, n_layers, dropout, num_classes, attention_method,
+                 padding_idx, *args, **kwargs):
         super(Model, self).__init__()
         self.hidden_size = hidden_size
-        self.embedding = nn.Embedding(vocab_size, embed_size, padding_idx=padding_idx)
-        self.lstm = nn.LSTM(embed_size, hidden_size, n_layers, dropout=dropout, bidirectional=True)
+        self.embedding = nn.Embedding(vocab_size, embed_dim, padding_idx=padding_idx)
+        self.lstm = nn.LSTM(embed_dim, hidden_size, n_layers, dropout=dropout, bidirectional=True)
         self.attn = Attention(2 * hidden_size, attention_method)
         self.fc = nn.Linear(2 * hidden_size, num_classes)
         self.init_weights()

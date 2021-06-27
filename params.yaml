@@ -34,10 +34,13 @@ cnn:
   use_bag: false
   hidden_size: 512
   kernel_size: 3
+  n_layers: 2
+  dropout: 0.33
+  max_len: 512
 
 
 selected:
-  embed_dim: 50
+  embed_size: 50
   use_bag: false
   attention_method: concat
   hidden_size: 512
