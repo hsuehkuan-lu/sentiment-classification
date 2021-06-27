@@ -26,15 +26,14 @@ class LSTMModel(ModelBase):
         self.init_weights()
 
     def init_weights(self):
-        initrange = 0.5
-        self.embedding.weight.data.uniform_(-initrange, initrange)
+        nn.init.xavier_normal_(self.embedding.weight)
         for param in self.lstm.parameters():
             if len(param.shape) >= 2:
                 init.orthogonal_(param.data)
             else:
-                init.uniform_(param.data, -initrange, initrange)
-        self.fc.weight.data.uniform_(-initrange, initrange)
-        self.fc.bias.data.zero_()
+                nn.init.xavier_normal_(param.data)
+        nn.init.kaiming_normal_(self.fc.weight, mode='fan_out', nonlinearity='sigmoid')
+        nn.init.constant(self.fc.bias, 0)
 
     def forward(self, text, text_lengths, hidden=None):
         # text = [L x B]
