@@ -48,15 +48,16 @@ selected:
   dropout: 0.33
 
 train:
-  batch_size: 64
+  batch_size: 128
   shuffle: true
-  epochs: 3
-  kfold: 5
+  epochs: 2
+  kfold: 10
   optimizer:
     lr: 0.0001
     step_lr: 2.0
     gamma: 0.5
     clip: 1.0
+    weight_decay: 0.001
 
 evaluate:
   batch_size: 200
