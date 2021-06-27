@@ -8,7 +8,7 @@ stages:
       size: 33430132
     - path: scripts/prepare.py
       md5: 20524be787ecc0bd3158a7a4cdaf20a7
-      size: 477
+      size: 494
     params:
       params.yaml:
         basic:
@@ -143,4 +143,68 @@ stages:
     outs:
     - path: outputs/lstm_submission.csv
       md5: bc70c92f06a91b45b0c84e5b826e7861
+      size: 258587
+  train@cnn:
+    cmd: python -m scripts.train cnn
+    deps:
+    - path: data/train.csv
+      md5: d0d12f53a232828404431f2416df09fe
+      size: 33430132
+    - path: outputs/config.json
+      md5: cdb8221e0e5eb1a11d5f25ff535fcc38
+      size: 85
+    - path: outputs/vocab.plk
+      md5: 14284264890cd690d7bad61190b39ce0
+      size: 966319
+    - path: scripts/train.py
+      md5: e37da7fb95e2b71508e55480397905ad
+      size: 3528
+    params:
+      params.yaml:
+        cnn:
+          embed_dim: 128
+          use_bag: false
+          hidden_size: 512
+          kernel_size: 3
+          n_layers: 4
+          dropout: 0.33
+          max_len: 512
+        train:
+          batch_size: 64
+          shuffle: true
+          epochs: 3
+          kfold: 5
+          optimizer:
+            lr: 0.0001
+            step_lr: 2.0
+            gamma: 0.5
+            clip: 1.0
+    outs:
+    - path: outputs/cnn_checkpoint.pth
+      md5: 3f1690058c3c432329453ef733de978b
+      size: 25602311
+    - path: outputs/cnn_plots.csv
+      md5: 1aade12a295869858f816f8e4f919747
+      size: 819
+    - path: outputs/cnn_results.json
+      md5: bd866328adddd96f785d21b37dc97e5d
+      size: 127
+  inference@cnn:
+    cmd: python -m scripts.inference cnn
+    deps:
+    - path: data/test.csv
+      md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
+      size: 33708755
+    - path: outputs/cnn_checkpoint.pth
+      md5: 3f1690058c3c432329453ef733de978b
+      size: 25602311
+    - path: outputs/config.json
+      md5: cdb8221e0e5eb1a11d5f25ff535fcc38
+      size: 85
+    - path: scripts/inference.py
+      md5: 3824553fe72926fced071bd91ad71d90
+      size: 1980
+    outs:
+    - path: outputs/cnn_submission.csv
+      md5: 5ec4bc3440cd7a2887bba1a08e29fcd8
       size: 258587

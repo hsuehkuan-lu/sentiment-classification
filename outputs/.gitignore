@@ -8,3 +8,5 @@
 /lstm_config.json
 /mlp_submission.csv
 /lstm_submission.csv
+/cnn_submission.csv
+/cnn_checkpoint.pth
