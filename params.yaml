@@ -50,7 +50,10 @@ train:
   epochs: 3
   kfold: 5
   optimizer:
-    lr: 0.001
+    lr: 0.01
     step_lr: 1.0
     gamma: 0.5
-    clip: 0.1
+    clip: 1.0
+
+evaluate:
+  batch_size: 200

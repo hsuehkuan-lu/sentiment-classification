@@ -46,7 +46,10 @@ def inference(method='lstm'):
     df[PARAMS['label']] = 0
     with torch.no_grad():
         all_preds = list()
-        inference_dataloader = DataFrameDataLoader(df, use_bag=PARAMS[method]['use_bag'])
+        inference_dataloader = DataFrameDataLoader(
+            df, batch_size=PARAMS['evaluate']['batch_size'], use_bag=PARAMS[method]['use_bag'],
+            use_eos=PARAMS[method]['use_eos'], max_len=PARAMS[method].get('max_len')
+        )
         for idx, (label, text, offsets) in enumerate(tqdm(inference_dataloader)):
             predicted_label = model(text, offsets)
             predicted_label = predicted_label.argmax(1)
