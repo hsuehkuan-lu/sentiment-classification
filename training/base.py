@@ -76,7 +76,7 @@ class TrainerBase(abc.ABC):
                 start_time = time.time()
         return np.mean(total_loss)
 
-    def train(self):
+    def train(self, dev_loss=None):
         best_results = dict()
         losses = list()
         total_f1 = None
@@ -90,10 +90,11 @@ class TrainerBase(abc.ABC):
                 'dev_loss': results['loss'],
                 'learning_rate': self._scheduler.get_last_lr()[0]
             })
-            if total_f1 is not None and total_f1 > results['f1-score']:
+            if dev_loss is not None and dev_loss < results['dev_loss']:
                 self._scheduler.step()
             else:
-                total_f1 = results['f1-score']
+                dev_loss = results['dev_loss']
+            if total_f1 is None or total_f1 < results['f1-score']:
                 best_results = results
                 self.save_model()
             print('-' * 59)
@@ -107,7 +108,7 @@ class TrainerBase(abc.ABC):
                 )
             )
             print('-' * 59)
-        return best_results, losses
+        return best_results, losses, dev_loss
 
     def evaluate(self):
         self._model.eval()

@@ -50,6 +50,7 @@ def start_training(method='lstm'):
     df = pd.read_csv('data/train.csv')
     total_results = list()
     total_losses = list()
+    dev_loss = None
     for idx, (train_index, valid_index) in enumerate(kf.split(df)):
         print(f"Cross validation {idx}-fold")
         train_df = df.iloc[train_index]
@@ -74,7 +75,7 @@ def start_training(method='lstm'):
         except Exception as e:
             raise e
 
-        results, losses = trainer.train()
+        results, losses, dev_loss = trainer.train(dev_loss)
         total_results.append(results)
         for loss in losses:
             loss['fold'] = idx + 1

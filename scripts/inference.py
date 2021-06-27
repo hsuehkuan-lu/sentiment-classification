@@ -41,7 +41,7 @@ def inference(method='lstm'):
         all_preds = list()
         inference_dataloader = DataFrameDataLoader(
             df, batch_size=PARAMS['evaluate']['batch_size'], use_bag=PARAMS[method]['use_bag'],
-            use_eos=PARAMS[method]['use_eos'], max_len=PARAMS[method].get('max_len')
+            use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
         )
         for idx, (label, text, offsets) in enumerate(tqdm(inference_dataloader)):
             predicted_label = model(text, offsets)
