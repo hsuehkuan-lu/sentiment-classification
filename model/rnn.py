@@ -31,8 +31,8 @@ class LSTMModel(ModelBase):
             if len(param.shape) >= 2:
                 init.orthogonal_(param.data)
             else:
-                nn.init.xavier_normal_(param.data)
-        nn.init.xavier_normal_(self.fc.weight)
+                nn.init.zeros_(param.data)
+        nn.init.kaiming_normal_(self.fc.weight, mode='fan_out', nonlinearity='sigmoid')
         nn.init.constant(self.fc.bias, 0)
 
     def forward(self, text, text_lengths, hidden=None):
