@@ -90,10 +90,10 @@ class TrainerBase(abc.ABC):
                 'dev_loss': results['loss'],
                 'learning_rate': self._scheduler.get_last_lr()[0]
             })
-            if dev_loss is not None and dev_loss < results['dev_loss']:
+            if dev_loss is not None and dev_loss < results['loss']:
                 self._scheduler.step()
             else:
-                dev_loss = results['dev_loss']
+                dev_loss = results['loss']
             if total_f1 is None or total_f1 < results['f1-score']:
                 best_results = results
                 self.save_model()
