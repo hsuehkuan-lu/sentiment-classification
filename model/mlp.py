@@ -3,9 +3,9 @@ from torch import nn
 from model.base import ModelBase
 
 
-class MLPModel(ModelBase):
-    def __init__(self, vocab_size, embed_dim, hidden_size, num_classes, dropout=0.1):
-        super(MLPModel, self).__init__()
+class Model(ModelBase):
+    def __init__(self, vocab_size, embed_dim, hidden_size, num_classes, dropout=0.1, *args, **kwargs):
+        super(Model, self).__init__()
         self.embedding = nn.EmbeddingBag(vocab_size, embed_dim, sparse=False)
         self.dropout_layer = nn.Dropout(dropout)
         self.fc1 = nn.Linear(embed_dim, hidden_size)
@@ -19,7 +19,7 @@ class MLPModel(ModelBase):
         nn.init.kaiming_normal_(self.fc2.weight, mode='fan_out', nonlinearity='relu')
         self.fc1.bias.data.zero_()
         self.fc2.bias.data.zero_()
-        nn.init.kaiming_normal_(self.fc.weight, mode='fan_out', nonlinearity='sigmoid')
+        nn.init.kaiming_normal_(self.out.weight, mode='fan_out', nonlinearity='sigmoid')
         nn.init.constant_(self.out.bias, 0)
 
     def forward(self, text, offsets):

@@ -3,6 +3,7 @@ import sys
 import json
 import yaml
 import torch
+import importlib
 import pandas as pd
 from pathlib import Path
 from tqdm import tqdm
@@ -21,19 +22,11 @@ with open(config_path, 'r') as f:
 
 
 def inference(method='lstm'):
-    if method == 'mlp':
-        model = mlp.MLPModel(
-            CONFIG['vocab_size'], PARAMS[method]['embed_dim'], PARAMS[method]['hidden_size'],
-            CONFIG['num_classes']
-        )
-    elif method == 'lstm':
-        model = rnn.LSTMModel(
-            CONFIG['vocab_size'], PARAMS[method]['embed_dim'], PARAMS[method]['hidden_size'],
-            PARAMS[method]['n_layers'], PARAMS[method]['dropout'], CONFIG['num_classes'],
-            PARAMS[method]['attention_method'], CONFIG['padding_idx']
-        )
-    else:
-        raise NotImplemented
+    try:
+        model_module = importlib.import_module(f'model.{method}')
+        model = model_module.Model(**CONFIG, **PARAMS)
+    except Exception as e:
+        raise e
     model_path = Path(os.getenv('OUTPUT_PATH'), f'{sys.argv[1]}_{os.getenv("MODEL_PATH")}')
     model.load_model(model_path)
     if torch.cuda.is_available():

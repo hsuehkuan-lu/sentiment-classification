@@ -3,21 +3,12 @@ import sys
 import json
 import yaml
 import torch
+import importlib
 import numpy as np
 import pandas as pd
 from pathlib import Path
 from sklearn.model_selection import KFold
 from data_loader.data_loaders import DataFrameDataLoader
-from model import (
-    mlp as mlp_model,
-    rnn as rnn_model,
-    cnn as cnn_model
-)
-from training import (
-    mlp as mlp_trainer,
-    rnn as rnn_trainer,
-    cnn as cnn_trainer
-)
 from dotenv import load_dotenv
 import logging
 
@@ -44,23 +35,11 @@ with open(config_path, 'r') as f:
 
 
 def start_training(method='lstm'):
-    if method == 'mlp':
-        model = mlp_model.MLPModel(
-            CONFIG['vocab_size'], PARAMS[method]['embed_dim'], PARAMS[method]['hidden_size'],
-            CONFIG['num_classes'], PARAMS[method]['dropout']
-        )
-    elif method == 'lstm':
-        model = rnn_model.LSTMModel(
-            CONFIG['vocab_size'], PARAMS[method]['embed_dim'], PARAMS[method]['hidden_size'],
-            PARAMS[method]['n_layers'], PARAMS[method]['dropout'], CONFIG['num_classes'],
-            PARAMS[method]['attention_method'], CONFIG['padding_idx']
-        )
-    elif method == 'cnn':
-        model = cnn_model.CNNModel(
-            **CONFIG, **PARAMS[method]
-        )
-    else:
-        raise NotImplementedError
+    try:
+        model_module = importlib.import_module(f'model.{method}')
+        model = model_module.Model(**CONFIG, **PARAMS[method])
+    except Exception as e:
+        raise e
     if torch.cuda.is_available():
         device = torch.device('cuda', PARAMS.get('gpu', 0))
     else:
@@ -79,28 +58,21 @@ def start_training(method='lstm'):
         train_dataloader = DataFrameDataLoader(
             train_df, batch_size=PARAMS['train']['batch_size'],
             shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag'],
-            use_eos=PARAMS[method]['use_eos'], max_len=PARAMS[method].get('max_len')
+            use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
         )
         valid_dataloader = DataFrameDataLoader(
             valid_df, batch_size=PARAMS['train']['batch_size'],
             shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag'],
-            use_eos=PARAMS[method]['use_eos'], max_len=PARAMS[method].get('max_len')
+            use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
         )
 
-        if method == 'mlp':
-            trainer = mlp_trainer.MLPTrainer(
+        try:
+            trainer_module = importlib.import_module(f'training.{method}')
+            trainer = trainer_module.Trainer(
                 model, train_dataloader, valid_dataloader
             )
-        elif method == 'lstm':
-            trainer = rnn_trainer.LSTMTrainer(
-                model, train_dataloader, valid_dataloader
-            )
-        elif method == 'cnn':
-            trainer = cnn_trainer.CNNTrainer(
-
-            )
-        else:
-            raise NotImplementedError
+        except Exception as e:
+            raise e
 
         results, losses = trainer.train()
         total_results.append(results)

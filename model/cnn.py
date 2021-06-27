@@ -13,10 +13,10 @@ else:
     DEVICE = torch.device('cpu')
 
 
-class CNNModel(ModelBase):
+class Model(ModelBase):
     def __init__(self, vocab_size, embed_size, hidden_size, kernel_size, n_layers, dropout, num_classes, attention_method,
                  padding_idx):
-        super(CNNModel, self).__init__()
+        super(Model, self).__init__()
         self.hidden_size = hidden_size
         self.embedding = nn.Embedding(vocab_size, embed_size, padding_idx=padding_idx)
         layers = [
