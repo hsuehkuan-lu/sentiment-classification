@@ -20,7 +20,7 @@ class MLPModel(ModelBase):
         self.fc1.bias.data.zero_()
         self.fc2.bias.data.zero_()
         nn.init.kaiming_normal_(self.fc.weight, mode='fan_out', nonlinearity='sigmoid')
-        nn.init.constant(self.out.bias, 0)
+        nn.init.constant_(self.out.bias, 0)
 
     def forward(self, text, offsets):
         embedded = self.embedding(text, offsets)

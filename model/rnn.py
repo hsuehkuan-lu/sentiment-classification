@@ -33,7 +33,7 @@ class LSTMModel(ModelBase):
             else:
                 nn.init.zeros_(param.data)
         nn.init.kaiming_normal_(self.fc.weight, mode='fan_out', nonlinearity='sigmoid')
-        nn.init.constant(self.fc.bias, 0)
+        nn.init.constant_(self.fc.bias, 0)
 
     def forward(self, text, text_lengths, hidden=None):
         # text = [L x B]
