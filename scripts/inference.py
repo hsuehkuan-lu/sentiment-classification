@@ -53,7 +53,7 @@ def inference(method='lstm'):
         for idx, (label, text, offsets) in enumerate(tqdm(inference_dataloader)):
             predicted_label = model(text, offsets)
             predicted_label = predicted_label.argmax(1)
-            all_preds += [predicted_label.detach().cpu().numpy()[0]]
+            all_preds += predicted_label.detach().cpu().numpy().tolist()
     df[PARAMS['label']] = all_preds
     return df
 

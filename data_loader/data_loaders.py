@@ -21,7 +21,7 @@ class DataFrameDataLoader(DataLoader):
         self.init()
         self._data_iter = list(zip(df['review'], df['sentiment']))
         collate_batch = partial(self.collate_batch, use_bag=use_bag, use_eos=use_eos, max_len=max_len)
-        super(DataFrameDataLoader, self).__init__(self._data_iter, collate_fn=collate_batch, *args, **kwargs)
+        super(DataFrameDataLoader, self).__init__(self._data_iter, collate_fn=collate_batch, num_workers=8, *args, **kwargs)
 
     def init(self):
         self._preprocessor = Preprocessor(torch.load('outputs/vocab.plk'))
