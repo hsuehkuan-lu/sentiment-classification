@@ -15,7 +15,8 @@ from model import (
 )
 from training import (
     mlp as mlp_trainer,
-    rnn as rnn_trainer
+    rnn as rnn_trainer,
+    cnn as cnn_trainer
 )
 from dotenv import load_dotenv
 import logging
