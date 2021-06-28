@@ -37,6 +37,8 @@ class TrainerBase(abc.ABC):
         self._scheduler = torch.optim.lr_scheduler.StepLR(
             self._optimizer, PARAMS['train']['optimizer']['step_lr'], gamma=PARAMS['train']['optimizer']['gamma']
         )
+        self._dev_loss = None
+        self._early_stops = 0
 
     def set_dataloader(self, train_dataloader, valid_dataloader=None):
         self._train_dataloader = train_dataloader
@@ -51,85 +53,36 @@ class TrainerBase(abc.ABC):
         model_path = Path(os.getenv('OUTPUT_PATH'), f'{self.method}_{os.getenv("MODEL_PATH")}')
         self._model.save_model(model_path)
 
-    def _train_epoch(self, epoch):
-        self._model.train()
+    def _run_epoch(self, dataloader, is_training=True):
         total_acc, total_count = 0, 0
+        all_preds, all_labels = list(), list()
         log_interval = PARAMS['log_interval']
+        total_loss = list()
         start_time = time.time()
 
-        total_loss = list()
-        for idx, (label, text, offsets) in enumerate(tqdm(self._train_dataloader)):
-            self._optimizer.zero_grad()
+        for idx, (label, text, offsets) in enumerate(dataloader):
+            if is_training:
+                self._optimizer.zero_grad()
             predicted_label = self._model(text, offsets)
-            # BCELoss
             loss = self._criterion(
-                predicted_label, F.one_hot(label, num_classes=CONFIG['num_classes']).type(torch.FloatTensor).to(DEVICE)
+                predicted_label,
+                F.one_hot(label, num_classes=CONFIG['num_classes']).type(torch.FloatTensor).to(DEVICE)
             )
-            loss.backward()
+            if is_training:
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(self._model.parameters(), PARAMS['train']['optimizer']['clip'])
+                self._optimizer.step()
+                if idx % log_interval == 0 and idx > 0:
+                    elapsed = time.time() - start_time
+                    print('| elapsed {} | {:5d}/{:5d} batches | loss {:8.3f} '
+                          '| accuracy {:8.3f}'.format(elapsed, idx, len(dataloader), loss, total_acc / total_count))
+                    total_acc, total_count = 0, 0
+                    start_time = time.time()
             total_loss += [float(loss)]
-            torch.nn.utils.clip_grad_norm_(self._model.parameters(), PARAMS['train']['optimizer']['clip'])
-            self._optimizer.step()
-            total_acc += (predicted_label.argmax(1) == label).sum().item()
+            predicted_label = predicted_label.argmax(1)
+            all_preds += [predicted_label.detach().cpu().numpy()]
+            all_labels += [label.detach().cpu().numpy()]
             total_count += label.size(0)
-            if idx % log_interval == 0 and idx > 0:
-                elapsed = time.time() - start_time
-                print('| epoch {:3d} | elapsed {} | {:5d}/{:5d} batches | loss {:8.3f} '
-                      '| accuracy {:8.3f}'.format(epoch, elapsed, idx, len(self._train_dataloader), loss,
-                                                  total_acc / total_count))
-                total_acc, total_count = 0, 0
-                start_time = time.time()
-        return np.mean(total_loss)
-
-    def train(self, dev_loss=None):
-        best_results = dict()
-        losses = list()
-        total_f1 = None
-        for epoch in range(1, PARAMS['train']['epochs'] + 1):
-            epoch_start_time = time.time()
-            loss = self._train_epoch(epoch)
-            results = self.evaluate()
-            losses.append({
-                'epoch': epoch,
-                'train_loss': loss,
-                'dev_loss': results['loss'],
-                'learning_rate': self._scheduler.get_last_lr()[0]
-            })
-            if dev_loss is not None and dev_loss < results['loss']:
-                self._scheduler.step()
-            else:
-                dev_loss = results['loss']
-            if total_f1 is None or total_f1 < results['f1-score']:
-                best_results = results
-                self.save_model()
-            print('-' * 59)
-            print(
-                '| end of epoch {:3d} | time: {:5.2f}s | avg loss {:8.3f} | '
-                'dev loss {:8.3f} | '
-                'valid accuracy {:8.3f} | precision {:8.3f} | '
-                'recall {:8.3f} | f1-score {:8.3f}'.format(
-                    epoch, time.time() - epoch_start_time, loss, results['loss'], results['accuracy'],
-                    results['precision'], results['recall'], results['f1-score']
-                )
-            )
-            print('-' * 59)
-        return best_results, losses, dev_loss
-
-    def evaluate(self):
-        self._model.eval()
-        total_count = 0
-        all_preds, all_labels = list(), list()
-        total_loss = list()
-        with torch.no_grad():
-            for idx, (label, text, offsets) in enumerate(self._valid_dataloader):
-                predicted_label = self._model(text, offsets)
-                loss = self._criterion(
-                    predicted_label, F.one_hot(label, num_classes=CONFIG['num_classes']).type(torch.FloatTensor).to(DEVICE)
-                )
-                total_loss += [float(loss)]
-                predicted_label = predicted_label.argmax(1)
-                all_preds += [predicted_label.detach().cpu().numpy()]
-                all_labels += [label.detach().cpu().numpy()]
-                total_count += label.size(0)
         all_preds = np.concatenate(all_preds, axis=0)
         all_labels = np.concatenate(all_labels, axis=0)
         prf = precision_recall_fscore_support(all_labels, all_preds, average='binary')
@@ -140,3 +93,85 @@ class TrainerBase(abc.ABC):
             'f1-score': prf[2],
             'loss': np.mean(total_loss)
         }
+
+    def _train_epoch(self):
+        self._model.train()
+        return self._run_epoch(self._train_dataloader)
+
+    def validate(self):
+        best_results = dict()
+        losses = list()
+        total_f1 = None
+        for epoch in range(1, PARAMS['validate']['epochs'] + 1):
+            epoch_start_time = time.time()
+            train_results = self._train_epoch()
+            eval_results = self.evaluate()
+            losses.append({
+                'epoch': epoch,
+                'train_loss': train_results['loss'],
+                'dev_loss': eval_results['loss'],
+                'learning_rate': self._scheduler.get_last_lr()[0]
+            })
+            if total_f1 is not None and total_f1 > eval_results['f1-score']:
+                self._early_stops += 1
+                if self._early_stops == PARAMS['validate']['early_stops']:
+                    break
+                self._scheduler.step()
+            else:
+                self._early_stops = 0
+                total_f1 = eval_results['f1-score']
+                best_results = eval_results
+            print('-' * 59)
+            print(
+                '| end of epoch {:3d} | time: {:5.2f}s | avg loss {:8.3f} | '
+                'dev loss {:8.3f} | '
+                'valid accuracy {:8.3f} | precision {:8.3f} | '
+                'recall {:8.3f} | f1-score {:8.3f}'.format(
+                    epoch, time.time() - epoch_start_time, train_results['loss'], eval_results['loss'],
+                    eval_results['accuracy'], eval_results['precision'], eval_results['recall'],
+                    eval_results['f1-score']
+                )
+            )
+            print('-' * 59)
+        return best_results, losses
+
+    def train(self):
+        best_results = dict()
+        losses = list()
+        total_f1 = None
+        for epoch in range(1, PARAMS['train']['epochs'] + 1):
+            epoch_start_time = time.time()
+            results = self._train_epoch()
+            losses.append({
+                'epoch': epoch,
+                'train_loss': results['loss'],
+                'dev_loss': 0.,
+                'learning_rate': self._scheduler.get_last_lr()[0]
+            })
+            if total_f1 is not None and total_f1 > results['f1-score']:
+                self._early_stops += 1
+                if self._early_stops == PARAMS['validate']['early_stops']:
+                    break
+                self._scheduler.step()
+            else:
+                self._early_stops = 0
+                total_f1 = results['f1-score']
+                best_results = results
+                self.save_model()
+            print('-' * 59)
+            print(
+                '| end of epoch {:3d} | time: {:5.2f}s | avg loss {:8.3f} | '
+                'valid accuracy {:8.3f} | precision {:8.3f} | '
+                'recall {:8.3f} | f1-score {:8.3f}'.format(
+                    epoch, time.time() - epoch_start_time, results['loss'], results['accuracy'],
+                    results['precision'], results['recall'], results['f1-score']
+                )
+            )
+            print('-' * 59)
+        return best_results, losses
+
+    def evaluate(self):
+        self._model.eval()
+
+        with torch.no_grad():
+            return self._run_epoch(self._valid_dataloader, is_training=False)

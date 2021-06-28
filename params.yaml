@@ -59,5 +59,18 @@ train:
     clip: 1.0
     weight_decay: 1e-05
 
+validate:
+  batch_size: 32
+  shuffle: true
+  epochs: 10
+  kfold: 10
+  early_stops: 3
+  optimizer:
+    lr: 0.0001
+    step_lr: 2.0
+    gamma: 0.5
+    clip: 1.0
+    weight_decay: 1e-05
+
 evaluate:
   batch_size: 200

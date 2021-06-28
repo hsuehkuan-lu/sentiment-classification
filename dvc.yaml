@@ -8,6 +8,28 @@ stages:
     - basic
     outs:
     - outputs/vocab.plk
+  validate:
+    foreach: # List of simple values
+      - mlp
+      - lstm
+      - cnn
+      - selected
+    do:
+      cmd: python -m scripts.validate ${item}
+      deps:
+        - data/train.csv
+        - outputs/vocab.plk
+        - outputs/config.json
+        - scripts/validate.py
+      params:
+        - ${item}
+        - validate
+      metrics:
+        - outputs/${item}_validate_results.json:
+            cache: false
+      plots:
+        - outputs/${item}_validate_plots.csv:
+            cache: false
   train:
     foreach: # List of simple values
     - mlp
