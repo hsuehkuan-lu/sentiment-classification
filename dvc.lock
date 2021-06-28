@@ -75,3 +75,44 @@ stages:
     - path: outputs/cnn_submission.csv
       md5: 5ec4bc3440cd7a2887bba1a08e29fcd8
       size: 258587
+  validate@mlp:
+    cmd: python -m scripts.validate mlp
+    deps:
+    - path: data/train.csv
+      md5: d0d12f53a232828404431f2416df09fe
+      size: 33430132
+    - path: outputs/config.json
+      md5: cdb8221e0e5eb1a11d5f25ff535fcc38
+      size: 85
+    - path: outputs/vocab.plk
+      md5: 14284264890cd690d7bad61190b39ce0
+      size: 966319
+    - path: scripts/validate.py
+      md5: 0e3aa787e0e2ae0f08dd8aa491d696d0
+      size: 3588
+    params:
+      params.yaml:
+        mlp:
+          embed_dim: 50
+          use_bag: true
+          hidden_size: 512
+          dropout: 0.1
+        validate:
+          batch_size: 64
+          shuffle: true
+          epochs: 10
+          kfold: 10
+          early_stops: 3
+          optimizer:
+            lr: 0.0001
+            step_lr: 2.0
+            gamma: 0.5
+            clip: 1.0
+            weight_decay: 0.0001
+    outs:
+    - path: outputs/mlp_validate_plots.csv
+      md5: 24ad54cd94cda48b7c2af99114a7baeb
+      size: 3354
+    - path: outputs/mlp_validate_results.json
+      md5: aaa209dbb4cba106227e7d5e5294c76c
+      size: 126
