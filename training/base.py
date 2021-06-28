@@ -60,7 +60,7 @@ class TrainerBase(abc.ABC):
         total_loss = list()
         start_time = time.time()
 
-        for idx, (label, text, offsets) in enumerate(dataloader):
+        for idx, (label, text, offsets) in enumerate(tqdm(dataloader)):
             if is_training:
                 self._optimizer.zero_grad()
             predicted_label = self._model(text, offsets)

@@ -35,7 +35,7 @@ with open(config_path, 'r') as f:
 
 
 def start_validating(method='lstm'):
-    kf = KFold(n_splits=PARAMS['train']['kfold'], shuffle=True, random_state=PARAMS['seed'])
+    kf = KFold(n_splits=PARAMS['validate']['kfold'], shuffle=True, random_state=PARAMS['seed'])
     df = pd.read_csv('data/train.csv')
     total_results = list()
     total_losses = list()
@@ -63,19 +63,19 @@ def start_validating(method='lstm'):
         valid_df = df.iloc[valid_index]
 
         train_dataloader = DataFrameDataLoader(
-            train_df, batch_size=PARAMS['train']['batch_size'],
-            shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag'],
+            train_df, batch_size=PARAMS['validate']['batch_size'],
+            shuffle=PARAMS['validate']['shuffle'], use_bag=PARAMS[method]['use_bag'],
             use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
         )
         valid_dataloader = DataFrameDataLoader(
-            valid_df, batch_size=PARAMS['train']['batch_size'],
-            shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag'],
+            valid_df, batch_size=PARAMS['validate']['batch_size'],
+            shuffle=PARAMS['validate']['shuffle'], use_bag=PARAMS[method]['use_bag'],
             use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
         )
 
         trainer.set_dataloader(train_dataloader, valid_dataloader)
 
-        results, losses, dev_loss = trainer.train(dev_loss)
+        results, losses = trainer.validate()
         total_results.append(results)
         for loss in losses:
             loss['fold'] = idx + 1
