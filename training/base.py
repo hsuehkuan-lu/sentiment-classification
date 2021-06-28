@@ -115,8 +115,6 @@ class TrainerBase(abc.ABC):
             })
             if total_f1 is not None and total_f1 > eval_results['f1-score']:
                 self._early_stops += 1
-                if self._early_stops == PARAMS[self.mode]['early_stops']:
-                    break
                 self._scheduler.step()
             else:
                 self._early_stops = 0
@@ -134,6 +132,8 @@ class TrainerBase(abc.ABC):
                 )
             )
             print('-' * 59)
+            if self._early_stops == PARAMS[self.mode]['early_stops']:
+                break
         return best_results, losses
 
     def train(self):
