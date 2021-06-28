@@ -71,7 +71,7 @@ class TrainerBase(abc.ABC):
             )
             if is_training:
                 loss.backward()
-                torch.nn.utils.clip_grad_norm_(self._model.parameters(), PARAMS[mode]['optimizer']['clip'])
+                torch.nn.utils.clip_grad_norm_(self._model.parameters(), PARAMS[self.mode]['optimizer']['clip'])
                 self._optimizer.step()
                 if idx % log_interval == 0 and idx > 0:
                     elapsed = time.time() - start_time

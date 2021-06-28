@@ -48,7 +48,7 @@ def start_training(method='lstm'):
 
     try:
         trainer_module = importlib.import_module(f'training.{method}')
-        trainer = trainer_module.Trainer(model)
+        trainer = trainer_module.Trainer(model, mode='train')
     except Exception as e:
         raise e
 
