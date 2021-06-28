@@ -39,7 +39,6 @@ def start_validating(method='lstm'):
     df = pd.read_csv('data/train.csv')
     total_results = list()
     total_losses = list()
-    dev_loss = None
     for idx, (train_index, valid_index) in enumerate(kf.split(df)):
         print(f"Cross validation {idx}-fold")
         try:
@@ -55,7 +54,7 @@ def start_validating(method='lstm'):
 
         try:
             trainer_module = importlib.import_module(f'training.{method}')
-            trainer = trainer_module.Trainer(model)
+            trainer = trainer_module.Trainer(model, mode='validate')
         except Exception as e:
             raise e
 

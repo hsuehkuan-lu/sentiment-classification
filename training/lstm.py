@@ -7,12 +7,12 @@ with open('params.yaml', 'r') as f:
 
 
 class Trainer(TrainerBase):
-    def __init__(self, model):
-        super(Trainer, self).__init__(model)
-        self._optimizer = torch.optim.RMSprop(self._model.parameters(), lr=PARAMS['train']['optimizer']['lr'],
-                                              weight_decay=float(PARAMS['train']['optimizer']['weight_decay']))
+    def __init__(self, model, mode):
+        super(Trainer, self).__init__(model, mode)
+        self._optimizer = torch.optim.RMSprop(self._model.parameters(), lr=PARAMS[mode]['optimizer']['lr'],
+                                              weight_decay=float(PARAMS[mode]['optimizer']['weight_decay']))
         self._scheduler = torch.optim.lr_scheduler.StepLR(
-            self._optimizer, PARAMS['train']['optimizer']['step_lr'], gamma=PARAMS['train']['optimizer']['gamma']
+            self._optimizer, PARAMS[mode]['optimizer']['step_lr'], gamma=PARAMS[mode]['optimizer']['gamma']
         )
 
     @property

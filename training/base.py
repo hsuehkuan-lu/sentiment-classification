@@ -28,14 +28,15 @@ with open(config_path, 'r') as f:
 
 
 class TrainerBase(abc.ABC):
-    def __init__(self, model):
+    def __init__(self, model, mode='train'):
+        self.mode = mode
         self._train_dataloader = None
         self._valid_dataloader = None
         self._model = model
         self._criterion = torch.nn.BCEWithLogitsLoss()
-        self._optimizer = torch.optim.SGD(self._model.parameters(), lr=PARAMS['train']['optimizer']['lr'])
+        self._optimizer = torch.optim.SGD(self._model.parameters(), lr=PARAMS[mode]['optimizer']['lr'])
         self._scheduler = torch.optim.lr_scheduler.StepLR(
-            self._optimizer, PARAMS['train']['optimizer']['step_lr'], gamma=PARAMS['train']['optimizer']['gamma']
+            self._optimizer, PARAMS[mode]['optimizer']['step_lr'], gamma=PARAMS[mode]['optimizer']['gamma']
         )
         self._dev_loss = None
         self._early_stops = 0
@@ -70,7 +71,7 @@ class TrainerBase(abc.ABC):
             )
             if is_training:
                 loss.backward()
-                torch.nn.utils.clip_grad_norm_(self._model.parameters(), PARAMS['train']['optimizer']['clip'])
+                torch.nn.utils.clip_grad_norm_(self._model.parameters(), PARAMS[mode]['optimizer']['clip'])
                 self._optimizer.step()
                 if idx % log_interval == 0 and idx > 0:
                     elapsed = time.time() - start_time
@@ -102,7 +103,7 @@ class TrainerBase(abc.ABC):
         best_results = dict()
         losses = list()
         total_f1 = None
-        for epoch in range(1, PARAMS['validate']['epochs'] + 1):
+        for epoch in range(1, PARAMS[self.mode]['epochs'] + 1):
             epoch_start_time = time.time()
             train_results = self._train_epoch()
             eval_results = self.evaluate()
@@ -114,7 +115,7 @@ class TrainerBase(abc.ABC):
             })
             if total_f1 is not None and total_f1 > eval_results['f1-score']:
                 self._early_stops += 1
-                if self._early_stops == PARAMS['validate']['early_stops']:
+                if self._early_stops == PARAMS[self.mode]['early_stops']:
                     break
                 self._scheduler.step()
             else:
@@ -139,7 +140,7 @@ class TrainerBase(abc.ABC):
         best_results = dict()
         losses = list()
         total_f1 = None
-        for epoch in range(1, PARAMS['train']['epochs'] + 1):
+        for epoch in range(1, PARAMS[self.mode]['epochs'] + 1):
             epoch_start_time = time.time()
             results = self._train_epoch()
             losses.append({
@@ -150,7 +151,7 @@ class TrainerBase(abc.ABC):
             })
             if total_f1 is not None and total_f1 > results['f1-score']:
                 self._early_stops += 1
-                if self._early_stops == PARAMS['validate']['early_stops']:
+                if self._early_stops == PARAMS[self.mode]['early_stops']:
                     break
                 self._scheduler.step()
             else:

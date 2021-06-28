@@ -52,54 +52,30 @@ def start_training(method='lstm'):
     except Exception as e:
         raise e
 
-    kf = KFold(n_splits=PARAMS['train']['kfold'], shuffle=True, random_state=PARAMS['seed'])
     df = pd.read_csv('data/train.csv')
-    total_results = list()
-    total_losses = list()
-    dev_loss = None
-    for idx, (train_index, valid_index) in enumerate(kf.split(df)):
-        print(f"Cross validation {idx}-fold")
-        train_df = df.iloc[train_index]
-        valid_df = df.iloc[valid_index]
+    dataloader = DataFrameDataLoader(
+        df, batch_size=PARAMS['train']['batch_size'],
+        shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag'],
+        use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
+    )
+    trainer.set_dataloader(dataloader)
+    results, losses = trainer.train()
 
-        train_dataloader = DataFrameDataLoader(
-            train_df, batch_size=PARAMS['train']['batch_size'],
-            shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag'],
-            use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
-        )
-        valid_dataloader = DataFrameDataLoader(
-            valid_df, batch_size=PARAMS['train']['batch_size'],
-            shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag'],
-            use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
-        )
+    columns = list(losses[0].keys())
+    losses_df = pd.DataFrame(losses, columns=columns)
 
-        trainer.set_dataloader(train_dataloader, valid_dataloader)
-
-        results, losses, dev_loss = trainer.train(dev_loss)
-        total_results.append(results)
-        for loss in losses:
-            loss['fold'] = idx + 1
-        total_losses += losses
-    print(total_losses)
-    columns = list(total_losses[0].keys())
-    total_losses_df = pd.DataFrame(total_losses, columns=columns)
-
-    average_results = dict()
-    for score in ('accuracy', 'precision', 'recall', 'f1-score'):
-        average_results[score] = np.mean([results[score] for results in total_results])
-    print(average_results)
-    return average_results, total_losses_df
+    return results, losses_df
 
 
 if __name__ == '__main__':
     method = sys.argv[1]
     try:
-        average_results, total_losses_df = start_training(method)
+        results, losses_df = start_training(method)
     except Exception as e:
         logging.error(e)
         raise e
     results_path = Path(os.getenv('OUTPUT_PATH'), f'{method}_{os.getenv("RESULTS_PATH")}')
     with open(results_path, 'w') as f:
-        json.dump(average_results, f)
+        json.dump(results, f)
     plots_path = Path(os.getenv('OUTPUT_PATH'), f'{method}_{os.getenv("PLOTS_PATH")}')
-    total_losses_df.to_csv(plots_path, index=False)
+    losses_df.to_csv(plots_path, index=False)
