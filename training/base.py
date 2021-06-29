@@ -79,7 +79,7 @@ class TrainerBase(abc.ABC):
                     total_acc, total_count = 0, 0
                     start_time = time.time()
             total_loss += [float(loss)]
-            preds = (predicted_label > 0.5).sequeeze(dim=-1)
+            preds = (predicted_label > 0.5).squeeze(dim=-1)
             all_preds += [preds.detach().cpu().numpy()]
             all_labels += [label.detach().cpu().numpy()]
             total_count += label.size(0)
