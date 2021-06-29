@@ -4,13 +4,13 @@ from model.base import ModelBase
 
 
 class Model(ModelBase):
-    def __init__(self, vocab_size, embed_dim, hidden_size, num_classes, dropout=0.1, *args, **kwargs):
+    def __init__(self, vocab_size, embed_dim, hidden_size, dropout=0.1, *args, **kwargs):
         super(Model, self).__init__()
         self.embedding = nn.EmbeddingBag(vocab_size, embed_dim, sparse=False)
         self.dropout_layer = nn.Dropout(dropout)
         self.fc1 = nn.Linear(embed_dim, hidden_size)
         self.fc2 = nn.Linear(hidden_size, hidden_size)
-        self.out = nn.Linear(hidden_size, num_classes)
+        self.out = nn.Linear(hidden_size, 1)
         self.init_weights()
 
     def init_weights(self):
@@ -26,7 +26,7 @@ class Model(ModelBase):
         embedded = self.embedding(text, offsets)
         x = self.dropout_layer(self.fc1(embedded)).relu()
         x = self.dropout_layer(self.fc2(x)).relu()
-        return self.out(x)
+        return nn.Sigmoid(self.out(x))
 
     def load_model(self, model_path):
         self.load_state_dict(torch.load(model_path))

@@ -33,7 +33,7 @@ class TrainerBase(abc.ABC):
         self._train_dataloader = None
         self._valid_dataloader = None
         self._model = model
-        self._criterion = torch.nn.BCEWithLogitsLoss()
+        self._criterion = torch.nn.BCELoss()
         self._optimizer = torch.optim.SGD(self._model.parameters(), lr=float(PARAMS[mode]['optimizer']['lr']))
         self._scheduler = torch.optim.lr_scheduler.StepLR(
             self._optimizer, PARAMS[mode]['optimizer']['step_lr'], gamma=PARAMS[mode]['optimizer']['gamma']
@@ -66,8 +66,7 @@ class TrainerBase(abc.ABC):
                 self._optimizer.zero_grad()
             predicted_label = self._model(text, offsets)
             loss = self._criterion(
-                predicted_label,
-                F.one_hot(label, num_classes=CONFIG['num_classes']).type(torch.FloatTensor).to(DEVICE)
+                predicted_label, label.unsequeeze(label, dim=-1)
             )
             if is_training:
                 loss.backward()
@@ -80,8 +79,8 @@ class TrainerBase(abc.ABC):
                     total_acc, total_count = 0, 0
                     start_time = time.time()
             total_loss += [float(loss)]
-            predicted_label = predicted_label.argmax(1)
-            all_preds += [predicted_label.detach().cpu().numpy()]
+            preds = (predicted_label > 0.5).sequeeze(dim=-1)
+            all_preds += [preds.detach().cpu().numpy()]
             all_labels += [label.detach().cpu().numpy()]
             total_count += label.size(0)
         all_preds = np.concatenate(all_preds, axis=0)
