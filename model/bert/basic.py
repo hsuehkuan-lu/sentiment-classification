@@ -15,8 +15,8 @@ class Model(ModelBase):
     def forward(self, tokens, masks=None):
         # BERT
         # [B x L x D], [B, D] (pooled_outputs)
-        _, x = self.bert(tokens, attention_mask=masks)
-        return self.out(x).sigmoid()
+        outputs = self.bert(tokens, attention_mask=masks)
+        return self.out(outputs.pooler_output).sigmoid()
 
     def load_model(self, model_path):
         self.load_state_dict(torch.load(model_path))
