@@ -30,15 +30,12 @@ class DataFrameDataLoader(DataLoader):
         label_list, text_list, offsets = [], [], [0]
         for (_text, _label) in batch:
             label_list.append(_label)
+            processed_text = self._preprocessor.text_pipeline(_text)
             if use_eos:
-                if max_len:
-                    processed_text = self._preprocessor.text_pipeline(_text) + [self.vocab[PARAMS['eos_token']]]
-                    processed_text = torch.tensor(processed_text[:max_len], dtype=torch.int64)
-                else:
-                    processed_text = torch.tensor(self._preprocessor.text_pipeline(_text)
-                                                  + [self.vocab[PARAMS['eos_token']]], dtype=torch.int64)
-            else:
-                processed_text = torch.tensor(self._preprocessor.text_pipeline(_text), dtype=torch.int64)
+                processed_text += [self.vocab[PARAMS['eos_token']]]
+            if max_len:
+                processed_text = processed_text[:max_len]
+            processed_text = torch.tensor(processed_text, dtype=torch.int64)
             text_list.append(processed_text)
             offsets.append(processed_text.size(0))
         label_list = torch.tensor(label_list, dtype=torch.float32)
