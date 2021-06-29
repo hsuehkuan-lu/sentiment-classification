@@ -78,6 +78,11 @@ class TrainerBase(abc.ABC):
                           '| accuracy {:8.3f}'.format(elapsed, idx, len(dataloader), loss, total_acc / total_count))
                     total_acc, total_count = 0, 0
                     start_time = time.time()
+            if float(loss) > 1:
+                print(text)
+                print(offsets)
+                print(predicted_label, label)
+                input("pause")
             total_loss += [float(loss)]
             preds = (predicted_label > 0.5).squeeze(dim=-1)
             all_preds += [preds.detach().cpu().numpy()]
