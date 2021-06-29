@@ -100,19 +100,19 @@ stages:
         validate:
           batch_size: 64
           shuffle: true
-          epochs: 10
+          epochs: 20
           kfold: 10
           early_stops: 3
           optimizer:
-            lr: 0.0001
+            lr: 1e-05
             step_lr: 2.0
             gamma: 0.5
             clip: 1.0
             weight_decay: 0.0001
     outs:
     - path: outputs/mlp_validate_plots.csv
-      md5: 24ad54cd94cda48b7c2af99114a7baeb
-      size: 3354
+      md5: 0592e05b4529a989c0f09b021c71362b
+      size: 9537
     - path: outputs/mlp_validate_results.json
-      md5: aaa209dbb4cba106227e7d5e5294c76c
-      size: 126
+      md5: b7e4f996e2dea315f050bed0fdf7acca
+      size: 127
