@@ -26,7 +26,7 @@ class Model(ModelBase):
         embedded = self.embedding(text, offsets)
         x = self.dropout_layer(self.fc1(embedded)).relu()
         x = self.dropout_layer(self.fc2(x)).relu()
-        return nn.Sigmoid(self.out(x))
+        return self.out(x).sigmoid()
 
     def load_model(self, model_path):
         self.load_state_dict(torch.load(model_path))
