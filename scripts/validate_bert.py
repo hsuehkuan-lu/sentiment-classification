@@ -20,7 +20,7 @@ with open('params.yaml', 'r') as f:
 
 def start_validating(method='basic'):
     kf = KFold(n_splits=PARAMS['validate']['kfold'], shuffle=True, random_state=PARAMS['seed'])
-    df = pd.read_csv('data/train.csv').iloc[:10]
+    df = pd.read_csv('data/train.csv')
     total_results = list()
     total_losses = list()
     for idx, (train_index, valid_index) in enumerate(kf.split(df)):
