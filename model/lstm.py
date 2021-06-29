@@ -22,7 +22,7 @@ class Model(ModelBase):
         self.embedding = nn.Embedding(vocab_size, embed_dim, padding_idx=padding_idx)
         self.lstm = nn.LSTM(embed_dim, hidden_size, n_layers, dropout=dropout, bidirectional=True)
         self.attn = Attention(2 * hidden_size, attention_method)
-        self.fc = nn.Linear(2 * hidden_size, num_classes)
+        self.fc = nn.Linear(2 * hidden_size, 1)
         self.init_weights()
 
     def init_weights(self):
@@ -49,7 +49,7 @@ class Model(ModelBase):
         attn_weights = self.attn(hidden_state, outputs)
         # attn_weights = [batch_size x 1 x lengths]
         context = torch.bmm(attn_weights, outputs.transpose(0, 1)).squeeze(1)
-        pred = self.fc(context)
+        pred = self.fc(context).sigmoid()
         pred = torch.index_select(pred, 0, unsorted_idx)
         return pred
 

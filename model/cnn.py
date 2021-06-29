@@ -33,7 +33,7 @@ class Model(ModelBase):
                 (f'relu{i}', nn.ReLU())
             ]
         self.conv = nn.Sequential(OrderedDict(layers))
-        self.out = nn.Linear(hidden_size, num_classes)
+        self.out = nn.Linear(hidden_size, 1)
         self.init_weights()
 
     def init_weights(self):
@@ -52,7 +52,7 @@ class Model(ModelBase):
         emb = emb.permute(1, 2, 0)
         x = self.conv(emb)
         x, _ = torch.max(x, dim=-1)
-        x = self.out(x)
+        x = self.out(x).sigmoid()
         return x
 
     def load_model(self, model_path):
