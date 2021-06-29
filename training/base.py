@@ -34,7 +34,7 @@ class TrainerBase(abc.ABC):
         self._valid_dataloader = None
         self._model = model
         self._criterion = torch.nn.BCEWithLogitsLoss()
-        self._optimizer = torch.optim.SGD(self._model.parameters(), lr=PARAMS[mode]['optimizer']['lr'])
+        self._optimizer = torch.optim.SGD(self._model.parameters(), lr=float(PARAMS[mode]['optimizer']['lr']))
         self._scheduler = torch.optim.lr_scheduler.StepLR(
             self._optimizer, PARAMS[mode]['optimizer']['step_lr'], gamma=PARAMS[mode]['optimizer']['gamma']
         )
