@@ -30,6 +30,24 @@ stages:
       plots:
         - outputs/${item}_validate_plots.csv:
             cache: false
+  validate_bert:
+    foreach: # List of simple values
+      - basic
+    do:
+      cmd: python -m scripts.validate_bert ${item}
+      deps:
+        - data/train.csv
+        - scripts/validate_bert.py
+      params:
+        - bert.max_len
+        - bert.${item}
+        - validate
+      metrics:
+        - outputs/bert-${item}_validate_results.json:
+            cache: false
+      plots:
+        - outputs/bert-${item}_validate_plots.csv:
+            cache: false
   train:
     foreach: # List of simple values
     - mlp

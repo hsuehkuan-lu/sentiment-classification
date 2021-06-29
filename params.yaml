@@ -8,6 +8,7 @@ pad_token: <pad>
 unk_token: <unk>
 sos_token: <sos>
 eos_token: <eos>
+max_len: 512
 
 basic:
   vocab_size: 30000
@@ -60,17 +61,22 @@ train:
     weight_decay: 1e-05
 
 validate:
-  batch_size: 64
+  batch_size: 32
   shuffle: true
   epochs: 10
   kfold: 10
   early_stops: 3
   optimizer:
-    lr: 0.001
+    lr: 2e-5
     step_lr: 2.0
     gamma: 0.5
     clip: 1.0
-    weight_decay: 1e-06
+    weight_decay: 0
 
 evaluate:
   batch_size: 200
+
+bert:
+  max_len: 512
+  basic:
+    method: "basic"
