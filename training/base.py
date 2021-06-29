@@ -78,7 +78,7 @@ class TrainerBase(abc.ABC):
                           '| accuracy {:8.3f}'.format(elapsed, idx, len(dataloader), loss, total_acc / total_count))
                     total_acc, total_count = 0, 0
                     start_time = time.time()
-            if float(loss) > 1:
+            if float(loss) > 10:
                 print(text)
                 print(offsets)
                 print(predicted_label, label)
