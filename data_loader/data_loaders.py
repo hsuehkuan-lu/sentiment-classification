@@ -41,7 +41,7 @@ class DataFrameDataLoader(DataLoader):
                 processed_text = torch.tensor(self._preprocessor.text_pipeline(_text), dtype=torch.int64)
             text_list.append(processed_text)
             offsets.append(processed_text.size(0))
-        label_list = torch.tensor(label_list, dtype=torch.float64)
+        label_list = torch.tensor(label_list, dtype=torch.float32)
         if use_bag:
             offsets = torch.tensor(offsets[:-1]).cumsum(dim=0)
             text_list = torch.cat(text_list)
