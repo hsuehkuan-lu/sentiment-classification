@@ -42,7 +42,7 @@ class Model(ModelBase):
             if isinstance(m, nn.Conv1d):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
                 nn.init.constant_(m.bias, 0)
-        nn.init.kaiming_normal_(self.out.weight, mode='fan_out', nonlinearity='sigmoid')
+        nn.init.xavier_normal_(self.out.weight)
         nn.init.constant_(self.out.bias, 0)
 
     def forward(self, text, text_lengths, hidden=None):
