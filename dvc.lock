@@ -116,3 +116,47 @@ stages:
     - path: outputs/mlp_validate_results.json
       md5: b7e4f996e2dea315f050bed0fdf7acca
       size: 127
+  validate@cnn:
+    cmd: python -m scripts.validate cnn
+    deps:
+    - path: data/train.csv
+      md5: d0d12f53a232828404431f2416df09fe
+      size: 33430132
+    - path: outputs/config.json
+      md5: cdb8221e0e5eb1a11d5f25ff535fcc38
+      size: 85
+    - path: outputs/vocab.plk
+      md5: 14284264890cd690d7bad61190b39ce0
+      size: 966319
+    - path: scripts/validate.py
+      md5: 0e3aa787e0e2ae0f08dd8aa491d696d0
+      size: 3588
+    params:
+      params.yaml:
+        cnn:
+          embed_dim: 128
+          use_bag: false
+          hidden_size: 512
+          kernel_size: 3
+          n_layers: 4
+          dropout: 0.33
+          max_len: 512
+        validate:
+          batch_size: 64
+          shuffle: true
+          epochs: 10
+          kfold: 10
+          early_stops: 3
+          optimizer:
+            lr: 0.001
+            step_lr: 2.0
+            gamma: 0.5
+            clip: 1.0
+            weight_decay: 1e-06
+    outs:
+    - path: outputs/cnn_validate_plots.csv
+      md5: 048c5d6e8f768602d6c2261687507772
+      size: 3839
+    - path: outputs/cnn_validate_results.json
+      md5: d1a11ca141476d800617b31736d666f8
+      size: 127
