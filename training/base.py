@@ -66,7 +66,7 @@ class TrainerBase(abc.ABC):
                 self._optimizer.zero_grad()
             predicted_label = self._model(text, offsets)
             loss = self._criterion(
-                predicted_label, label.unsqueeze(label, dim=-1)
+                predicted_label, label.unsqueeze(dim=-1)
             )
             if is_training:
                 loss.backward()
