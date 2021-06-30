@@ -18,12 +18,11 @@ class Attention(nn.Module):
         self.init_weights()
 
     def init_weights(self):
-        initrange = 0.5
         if hasattr(self, 'attn'):
-            self.attn.weight.data.uniform_(-initrange, initrange)
-            self.attn.bias.data.zero_()
+            nn.init.xavier_normal_(self.attn.weight)
+            nn.init.constant_(self.attn.bias, 0)
         if hasattr(self, 'v'):
-            self.v.weight.data.uniform_(-initrange, initrange)
+            nn.init.xavier_normal_(self.v.weight)
 
     def dot_score(self, hidden, encoder_output):
         return torch.matmul(hidden, encoder_output)

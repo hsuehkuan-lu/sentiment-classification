@@ -15,7 +15,7 @@ class Model(ModelBase):
         self.bert = BertModel.from_pretrained(pretrained_model, output_hidden_states=True)
         self.dropout = nn.Dropout(dropout)
         self.lstm = nn.LSTM(
-            4 * bert_hidden_size, hidden_size, n_layers, batch_first=True,
+            4 * bert_hidden_size, hidden_size, n_layers,
             dropout=dropout, bidirectional=True
         )
         self.attn = Attention(2 * hidden_size, attention_method)
@@ -27,10 +27,10 @@ class Model(ModelBase):
         # [B x L x D], [B, D] (pooled_outputs)
         x = self.bert(tokens, attention_mask=masks)
         x = torch.cat(tuple([x.hidden_states[i] for i in [-4, -3, -2, -1]]), dim=-1)
-        x, (hidden_state, _) = self.lstm(x)
-        hidden_state = hidden_state[-2:, :, :].view(1, -1, 2 * self.hidden_size)
+        x, (hidden_state, _) = self.lstm(x.transpose(0, 1))
+        hidden_state = hidden_state[-2:, :, :].view(1, -1, 2 * self.hidden_size).squeeze(0)
         attn_weights = self.attn(hidden_state, x)
-        x = torch.bmm(attn_weights, x).squeeze(1)
+        x = torch.bmm(attn_weights, x.transpose(0, 1)).squeeze(1)
         return self.out(x).sigmoid()
 
     def load_model(self, model_path):
