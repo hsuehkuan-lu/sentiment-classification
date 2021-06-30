@@ -7,7 +7,10 @@ from torch.utils.data import DataLoader
 with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
 
-DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+if torch.cuda.is_available():
+    DEVICE = torch.device('cuda', PARAMS.get('gpu', 0))
+else:
+    DEVICE = torch.device('cpu')
 
 
 class DataFrameDataLoader(DataLoader):

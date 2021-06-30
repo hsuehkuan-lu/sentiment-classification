@@ -27,10 +27,12 @@ def start_validating(method='basic'):
     try:
         model_module = importlib.import_module(f'model.bert.{method}')
         model = model_module.Model(**PARAMS['bert'][method])
-        model = nn.DataParallel(model)
     except Exception as e:
         raise e
-    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    if torch.cuda.is_available():
+        device = torch.device('cuda', PARAMS.get('gpu', 0))
+    else:
+        device = torch.device('cpu')
     model.to(device)
 
     try:
