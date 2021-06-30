@@ -25,7 +25,7 @@ with open(config_path, 'r') as f:
 def start_training(bert_model, method='basic'):
     try:
         model_module = importlib.import_module(f'model.{bert_model}.{method}')
-        model = model_module.Model(**CONFIG, **PARAMS[method])
+        model = model_module.Model(**CONFIG, **PARAMS[bert_model], **PARAMS[bert_model][method])
     except Exception as e:
         raise e
     if torch.cuda.is_available():
