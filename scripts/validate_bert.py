@@ -6,6 +6,7 @@ import torch
 import importlib
 import numpy as np
 import pandas as pd
+from torch import nn
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 from data_loader.bert_dataloaders import DataFrameDataLoader
@@ -26,12 +27,10 @@ def start_validating(method='basic'):
     try:
         model_module = importlib.import_module(f'model.bert.{method}')
         model = model_module.Model(**PARAMS['bert'][method])
+        model = nn.DataParallel(model)
     except Exception as e:
         raise e
-    if torch.cuda.is_available():
-        device = torch.device('cuda', PARAMS.get('gpu', 0))
-    else:
-        device = torch.device('cpu')
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     model.to(device)
 
     try:
