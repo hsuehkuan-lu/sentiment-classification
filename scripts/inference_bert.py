@@ -25,6 +25,8 @@ def inference(bert_model, method='lstm'):
         device = torch.device('cuda', PARAMS.get('gpu', 0))
     else:
         device = torch.device('cpu')
+    model_path = Path(os.getenv('OUTPUT_PATH'), f'{bert_model}-{method}_{os.getenv("MODEL_PATH")}')
+    model.load_model(model_path)
     model.to(device)
 
     df = pd.read_csv('data/test.csv')
