@@ -17,7 +17,7 @@ class Model(ModelBase):
         ]
         for i in range(2, n_layers+1):
             layers += [
-                (f'fc{i}', nn.Linear(768))
+                (f'fc{i}', nn.Linear(768)),
                 (f'drop{i}', nn.Dropout(dropout)),
                 (f'relu{i}', nn.ReLU())
             ]
