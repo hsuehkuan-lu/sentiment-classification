@@ -9,7 +9,7 @@ class Model(ModelBase):
     def __init__(self, hidden_size, dropout, pretrained_model, *args, **kwargs):
         super(Model, self).__init__()
         # [B x L] -> [B x L x D], [B x D]
-        self.bert = BertModel.from_pretrained(pretrained_model)
+        self.bert = BertModel.from_pretrained(pretrained_model, output_hidden_states=True)
         self.dropout = nn.Dropout(dropout)
         self.out = nn.Linear(4 * hidden_size, 1)
         self.init_weights()
