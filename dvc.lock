@@ -172,14 +172,15 @@ stages:
     params:
       params.yaml:
         bert.basic:
+          fix_weight: false
           n_layers: 1
           hidden_size: 512
           dropout: 0.1
         bert.max_len: 512
         validate:
-          batch_size: 128
+          batch_size: 8
           shuffle: true
-          epochs: 10
+          epochs: 4
           kfold: 10
           early_stops: 3
           optimizer:
@@ -190,8 +191,8 @@ stages:
             weight_decay: 0
     outs:
     - path: outputs/bert-basic_validate_plots.csv
-      md5: fb2234d66b2fe3e2f9b900e434340626
-      size: 515
+      md5: e917319dd6941b48c4ca5ae180f5f054
+      size: 233
     - path: outputs/bert-basic_validate_results.json
-      md5: 69d0daf093fcc957b711d255ed2cc208
+      md5: 2dd4de3790970a2a18b7425a891fe18c
       size: 155
