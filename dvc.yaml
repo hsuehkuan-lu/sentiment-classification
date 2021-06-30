@@ -33,6 +33,7 @@ stages:
   validate_bert:
     foreach: # List of simple values
       - basic
+      - lstm
     do:
       cmd: python -m scripts.validate_bert ${item}
       deps:
