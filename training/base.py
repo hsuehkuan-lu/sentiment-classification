@@ -22,11 +22,6 @@ else:
     DEVICE = torch.device('cpu')
 
 
-config_path = Path(os.getenv('OUTPUT_PATH'), os.getenv('CONFIG_PATH'))
-with open(config_path, 'r') as f:
-    CONFIG = json.load(f)
-
-
 class TrainerBase(abc.ABC):
     def __init__(self, model, mode='train'):
         self.mode = mode
