@@ -282,9 +282,9 @@ stages:
       md5: 2adea24bf1a1c5648c0a12bf852433ce
       size: 530373919
     - path: scripts/inference_bert.py
-      md5: 63557c0da6b70ca9e2c310a1cd37f881
-      size: 1902
+      md5: 4253ac549774d38db305a9097228c108
+      size: 1898
     outs:
     - path: outputs/bert-lstm_submission.csv
-      md5: c1cf05f5009e946b8c3bd28a2a8df9c3
-      size: 258587
+      md5: 9d080c140238e6adbeb7ef78c54ede21
+      size: 419729
