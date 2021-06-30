@@ -17,4 +17,4 @@ class Trainer(TrainerBase):
 
     @property
     def method(self):
-        return 'bert-basic-lstm'
+        return 'bert-lstm'

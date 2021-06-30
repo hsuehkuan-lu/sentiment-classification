@@ -19,14 +19,14 @@ with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
 
 
-def start_validating(method='basic'):
+def start_validating(bert_model, method='basic'):
     df = pd.read_csv('data/train.csv')
     train_df, valid_df = train_test_split(df, test_size=1. / PARAMS['validate']['kfold'], random_state=PARAMS['seed'])
 
     print(f"Train valid split")
     try:
-        model_module = importlib.import_module(f'model.bert.{method}')
-        model = model_module.Model(**PARAMS['bert'][method])
+        model_module = importlib.import_module(f'model.{bert_model}.{method}')
+        model = model_module.Model(**PARAMS[bert_model][method])
     except Exception as e:
         raise e
     if torch.cuda.is_available():
@@ -36,24 +36,23 @@ def start_validating(method='basic'):
     model.to(device)
 
     try:
-        trainer_module = importlib.import_module(f'training.bert.{method}')
+        trainer_module = importlib.import_module(f'training.{bert_model}.{method}')
         trainer = trainer_module.Trainer(model, mode='validate')
     except Exception as e:
         raise e
 
     train_dataloader = DataFrameDataLoader(
-        train_df, pretrained_model=PARAMS['bert'][method]['pretrained_model'],
+        train_df, pretrained_model=PARAMS[bert_model]['pretrained_model'],
         batch_size=PARAMS['validate']['batch_size'],
-        shuffle=PARAMS['validate']['shuffle'], max_len=PARAMS['bert']['max_len']
+        shuffle=PARAMS['validate']['shuffle'], max_len=PARAMS[bert_model]['max_len']
     )
     valid_dataloader = DataFrameDataLoader(
-        valid_df, pretrained_model=PARAMS['bert'][method]['pretrained_model'],
+        valid_df, pretrained_model=PARAMS[bert_model]['pretrained_model'],
         batch_size=PARAMS['validate']['batch_size'],
-        shuffle=PARAMS['validate']['shuffle'], max_len=PARAMS['bert']['eval_max_len']
+        shuffle=PARAMS['validate']['shuffle'], max_len=PARAMS[bert_model]['eval_max_len']
     )
 
     trainer.set_dataloader(train_dataloader, valid_dataloader)
-
     results, losses = trainer.validate()
 
     columns = list(losses[0].keys())
@@ -63,8 +62,8 @@ def start_validating(method='basic'):
 
 
 if __name__ == '__main__':
-    method = sys.argv[1]
-    results, losses_df = start_validating(method)
+    bert_model, method = sys.argv[1], sys.argv[2]
+    results, losses_df = start_validating(bert_model, method)
     results_path = Path(os.getenv('OUTPUT_PATH'), f'bert-{method}_validate_{os.getenv("RESULTS_PATH")}')
     with open(results_path, 'w') as f:
         json.dump(results, f)

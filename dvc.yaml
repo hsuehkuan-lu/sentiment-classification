@@ -35,13 +35,14 @@ stages:
       - basic
       - lstm
     do:
-      cmd: python -m scripts.validate_bert ${item}
+      cmd: python -m scripts.validate_bert bert ${item}
       deps:
         - data/train.csv
         - scripts/validate_bert.py
       params:
         - bert.max_len
         - bert.${item}
+        - bert.pretrained_model
         - validate
       metrics:
         - outputs/bert-${item}_validate_results.json:
@@ -73,6 +74,30 @@ stages:
           cache: false
       outs:
       - outputs/${item}_checkpoint.pth
+
+  train_bert:
+    foreach: # List of simple values
+      - basic
+      - lstm
+    do:
+      cmd: python -m scripts.train_bert bert ${item}
+      deps:
+      - data/train.csv
+      - scripts/train_bert.py
+      params:
+      - bert.max_len
+      - bert.${item}
+      - bert.pretrained_model
+      - train
+      metrics:
+        - outputs/bert-${item}_results.json:
+            cache: false
+      plots:
+        - outputs/bert-${item}_plots.csv:
+            cache: false
+      outs:
+        - outputs/bert-${item}_checkpoint.pth
+
   inference:
     foreach: # List of simple values
     - mlp
