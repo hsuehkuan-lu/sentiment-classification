@@ -113,3 +113,16 @@ stages:
       - outputs/config.json
       outs:
       - outputs/${item}_submission.csv
+
+  inference_bert:
+    foreach: # List of simple values
+      - basic
+      - lstm
+    do:
+      cmd: python -m scripts.inference_bert bert ${item}
+      deps:
+        - data/test.csv
+        - scripts/inference_bert.py
+        - outputs/bert-${item}_checkpoint.pth
+      outs:
+        - outputs/bert-${item}_submission.csv
