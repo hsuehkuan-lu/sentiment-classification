@@ -233,3 +233,42 @@ stages:
     - path: outputs/bert-lstm_validate_results.json
       md5: f1f0542a879a1862dcf82eb17790e629
       size: 153
+  train_bert@lstm:
+    cmd: python -m scripts.train_bert bert lstm
+    deps:
+    - path: data/train.csv
+      md5: d0d12f53a232828404431f2416df09fe
+      size: 33430132
+    - path: scripts/train_bert.py
+      md5: 28fb5beb554be9c9253586dab639ec0f
+      size: 1943
+    params:
+      params.yaml:
+        bert.lstm:
+          bert_hidden_size: 768
+          hidden_size: 512
+          dropout: 0.1
+          n_layers: 2
+          attention_method: concat
+        bert.max_len: 128
+        bert.pretrained_model: bert-base-uncased
+        train:
+          batch_size: 32
+          shuffle: true
+          epochs: 4
+          optimizer:
+            lr: 2e-05
+            step_lr: 2.0
+            gamma: 0.5
+            clip: 1.0
+            weight_decay: 0
+    outs:
+    - path: outputs/bert-lstm_checkpoint.pth
+      md5: 2adea24bf1a1c5648c0a12bf852433ce
+      size: 530373919
+    - path: outputs/bert-lstm_plots.csv
+      md5: 5a2f68ca26ced5e3b82c52a23f736a27
+      size: 171
+    - path: outputs/bert-lstm_results.json
+      md5: f0227ac6257fb301b759ab0b619cbbb0
+      size: 156
