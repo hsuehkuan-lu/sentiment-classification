@@ -6,9 +6,10 @@ from transformers import BertModel
 
 
 class Model(ModelBase):
-    def __init__(self, n_layers, hidden_size, dropout, *args, **kwargs):
+    def __init__(self, n_layers, hidden_size, dropout, fix_weight, *args, **kwargs):
         super(Model, self).__init__()
         # [B x L] -> [B x L x D], [B x D]
+        self.fix_weight = fix_weight
         self.bert = BertModel.from_pretrained('bert-base-uncased')
         layers = [
             ('fc1', nn.Linear(768, hidden_size)),
@@ -39,8 +40,9 @@ class Model(ModelBase):
         self.eval()
 
     def init_weights(self):
-        for p in self.bert.parameters():
-            p.requires_grad = False
+        if self.fix_weight:
+            for p in self.bert.parameters():
+                p.requires_grad = False
         for m in self.out.modules():
             if isinstance(m, nn.Linear):
                 nn.init.xavier_normal_(m.weight)

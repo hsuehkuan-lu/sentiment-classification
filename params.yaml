@@ -79,6 +79,7 @@ evaluate:
 bert:
   max_len: 512
   basic:
+    fix_weight: false
     n_layers: 1
     hidden_size: 512
     dropout: 0.1
