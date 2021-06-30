@@ -38,7 +38,7 @@ class Attention(nn.Module):
         return self.v(attn).squeeze(dim=-1)
 
     def forward(self, hidden, encoder_output):
-        # output = [lengths x batch_size x hidden_size]
+        # output = [batch_size x length x hidden_size]
         # hidden = [batch_size x hidden_size]
         attn_scores = None
         if self.method == 'dot':
