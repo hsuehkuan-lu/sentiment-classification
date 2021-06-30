@@ -13,13 +13,13 @@ class Model(ModelBase):
         layers = [
             ('fc1', nn.Linear(768, hidden_size)),
             ('drop1', nn.Dropout(dropout)),
-            ('relu1', nn.Relu())
+            ('relu1', nn.ReLU())
         ]
         for i in range(2, n_layers+1):
             layers += [
                 (f'fc{i}', nn.Linear(768))
                 ('drop{i}', nn.Dropout(dropout)),
-                ('relu{i}', nn.Relu())
+                ('relu{i}', nn.ReLU())
             ]
         layers += [
             ('out', nn.Linear(hidden_size, 1)),
