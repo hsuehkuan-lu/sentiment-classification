@@ -41,7 +41,7 @@ class Model(ModelBase):
     def init_weights(self):
         for p in self.bert.parameters():
             p.requires_grad = False
-        for m in self.conv.modules():
+        for m in self.out.modules():
             if isinstance(m, nn.Linear):
                 nn.init.xavier_normal_(m.weight)
                 nn.init.constant_(m.bias, 0)
