@@ -167,18 +167,17 @@ stages:
       md5: d0d12f53a232828404431f2416df09fe
       size: 33430132
     - path: scripts/validate_bert.py
-      md5: 3a4f674c42789dccb5547cba74672d3e
-      size: 2315
+      md5: b8d7c28900ead5fc89eb87b5c55d6f16
+      size: 2429
     params:
       params.yaml:
         bert.basic:
-          fix_weight: false
-          n_layers: 1
-          hidden_size: 512
+          pretrained_model: bert-base-uncased
+          hidden_size: 768
           dropout: 0.1
-        bert.max_len: 512
+        bert.max_len: 128
         validate:
-          batch_size: 8
+          batch_size: 32
           shuffle: true
           epochs: 4
           kfold: 10
@@ -191,8 +190,8 @@ stages:
             weight_decay: 0
     outs:
     - path: outputs/bert-basic_validate_plots.csv
-      md5: e917319dd6941b48c4ca5ae180f5f054
-      size: 233
+      md5: 261b5f5d6626b9760f6eb3a7731959a4
+      size: 232
     - path: outputs/bert-basic_validate_results.json
-      md5: 2dd4de3790970a2a18b7425a891fe18c
-      size: 155
+      md5: 83e3f47932d2cc95584327703d8fb775
+      size: 154
