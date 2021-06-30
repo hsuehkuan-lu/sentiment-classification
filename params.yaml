@@ -61,7 +61,7 @@ train:
     weight_decay: 1e-05
 
 validate:
-  batch_size: 32
+  batch_size: 128
   shuffle: true
   epochs: 10
   kfold: 10

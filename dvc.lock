@@ -160,3 +160,38 @@ stages:
     - path: outputs/cnn_validate_results.json
       md5: d1a11ca141476d800617b31736d666f8
       size: 127
+  validate_bert@basic:
+    cmd: python -m scripts.validate_bert basic
+    deps:
+    - path: data/train.csv
+      md5: d0d12f53a232828404431f2416df09fe
+      size: 33430132
+    - path: scripts/validate_bert.py
+      md5: 3a4f674c42789dccb5547cba74672d3e
+      size: 2315
+    params:
+      params.yaml:
+        bert.basic:
+          n_layers: 1
+          hidden_size: 512
+          dropout: 0.1
+        bert.max_len: 512
+        validate:
+          batch_size: 128
+          shuffle: true
+          epochs: 10
+          kfold: 10
+          early_stops: 3
+          optimizer:
+            lr: 2e-05
+            step_lr: 2.0
+            gamma: 0.5
+            clip: 1.0
+            weight_decay: 0
+    outs:
+    - path: outputs/bert-basic_validate_plots.csv
+      md5: fb2234d66b2fe3e2f9b900e434340626
+      size: 515
+    - path: outputs/bert-basic_validate_results.json
+      md5: 69d0daf093fcc957b711d255ed2cc208
+      size: 155
