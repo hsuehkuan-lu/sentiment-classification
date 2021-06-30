@@ -11,3 +11,4 @@
 /cnn_submission.csv
 /cnn_checkpoint.pth
 /bert-lstm_checkpoint.pth
+/bert-lstm_submission.csv

@@ -272,3 +272,19 @@ stages:
     - path: outputs/bert-lstm_results.json
       md5: f0227ac6257fb301b759ab0b619cbbb0
       size: 156
+  inference_bert@lstm:
+    cmd: python -m scripts.inference_bert bert lstm
+    deps:
+    - path: data/test.csv
+      md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
+      size: 33708755
+    - path: outputs/bert-lstm_checkpoint.pth
+      md5: 2adea24bf1a1c5648c0a12bf852433ce
+      size: 530373919
+    - path: scripts/inference_bert.py
+      md5: ac5ded39605f6ab0e976b7a852405a6e
+      size: 1767
+    outs:
+    - path: outputs/bert-lstm_submission.csv
+      md5: c1cf05f5009e946b8c3bd28a2a8df9c3
+      size: 258587
