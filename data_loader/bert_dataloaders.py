@@ -28,7 +28,7 @@ class DataFrameDataLoader(DataLoader):
             label_list.append(_label)
             encoded_dict = self._tokenizer.encode_plus(
                 _text, add_special_tokens=True, max_length=max_len,
-                padding='max_length', return_attention_mask=True,
+                pad_to_max_length=True, return_attention_mask=True,
                 return_tensors='pt'
             )
             text_list.append(encoded_dict['input_ids'])
