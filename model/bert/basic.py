@@ -25,7 +25,7 @@ class Model(ModelBase):
             ('out', nn.Linear(hidden_size, 1)),
             ('sigmoid', nn.Sigmoid())
         ]
-        self.out = nn.Sequential(layers)
+        self.out = nn.Sequential(OrderedDict(layers))
         self.init_weights()
 
     def forward(self, tokens, masks=None):
