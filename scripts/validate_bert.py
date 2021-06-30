@@ -21,8 +21,7 @@ with open('params.yaml', 'r') as f:
 def start_validating(method='basic'):
     df = pd.read_csv('data/train.csv')
     train_df, valid_df = train_test_split(df, test_size=1. / PARAMS['validate']['kfold'], random_state=PARAMS['seed'])
-    total_results = list()
-    total_losses = list()
+
     print(f"Train valid split")
     try:
         model_module = importlib.import_module(f'model.bert.{method}')
@@ -42,12 +41,14 @@ def start_validating(method='basic'):
         raise e
 
     train_dataloader = DataFrameDataLoader(
-        train_df, batch_size=PARAMS['validate']['batch_size'],
+        train_df, pretrained_model=PARAMS['bert'][method]['pretrained_model'],
+        batch_size=PARAMS['validate']['batch_size'],
         shuffle=PARAMS['validate']['shuffle'], max_len=PARAMS['bert']['max_len']
     )
     valid_dataloader = DataFrameDataLoader(
-        valid_df, batch_size=PARAMS['validate']['batch_size'],
-        shuffle=PARAMS['validate']['shuffle'], max_len=PARAMS['bert']['max_len']
+        valid_df, pretrained_model=PARAMS['bert'][method]['pretrained_model'],
+        batch_size=PARAMS['validate']['batch_size'],
+        shuffle=PARAMS['validate']['shuffle'], max_len=PARAMS['bert']['eval_max_len']
     )
 
     trainer.set_dataloader(train_dataloader, valid_dataloader)

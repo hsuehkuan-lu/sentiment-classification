@@ -14,9 +14,9 @@ else:
 
 
 class DataFrameDataLoader(DataLoader):
-    def __init__(self, df, max_len=None, *args, **kwargs):
+    def __init__(self, df, max_len, pretrained_model, *args, **kwargs):
         # order is text, label
-        self._tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+        self._tokenizer = BertTokenizer.from_pretrained(pretrained_model, do_lower_case=True)
         self._data_iter = list(zip(df['review'], df['sentiment']))
         collate_batch = partial(self.collate_batch, max_len=max_len)
         super(DataFrameDataLoader, self).__init__(self._data_iter, collate_fn=collate_batch, *args, **kwargs)
@@ -28,7 +28,7 @@ class DataFrameDataLoader(DataLoader):
             label_list.append(_label)
             encoded_dict = self._tokenizer.encode_plus(
                 _text, add_special_tokens=True, max_length=max_len,
-                pad_to_max_length=True, return_attention_mask=True,
+                padding='max_length', return_attention_mask=True,
                 return_tensors='pt'
             )
             text_list.append(encoded_dict['input_ids'])

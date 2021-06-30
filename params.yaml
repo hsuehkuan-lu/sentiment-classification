@@ -77,9 +77,9 @@ evaluate:
   batch_size: 200
 
 bert:
-  max_len: 512
+  max_len: 128
+  eval_max_len: 512
   basic:
-    fix_weight: false
-    n_layers: 1
-    hidden_size: 512
+    pretrained_model: "bert-base-uncased"
+    hidden_size: 768
     dropout: 0.1
