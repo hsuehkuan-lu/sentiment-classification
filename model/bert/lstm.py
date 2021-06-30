@@ -15,7 +15,7 @@ class Model(ModelBase):
         self.bert = BertModel.from_pretrained(pretrained_model, output_hidden_states=True)
         self.dropout = nn.Dropout(dropout)
         self.lstm = nn.LSTM(
-            bert_hidden_size, hidden_size, n_layers, batch_first=True,
+            4 * bert_hidden_size, hidden_size, n_layers, batch_first=True,
             dropout=dropout, bidirectional=True
         )
         self.attn = Attention(2 * hidden_size, attention_method)
