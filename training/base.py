@@ -55,7 +55,7 @@ class TrainerBase(abc.ABC):
         self._model.save_model(model_path)
 
     def _run_epoch(self, dataloader, is_training=True):
-        total_acc, total_count = 0, 0
+        eval_preds, eval_labels = list(), list()
         all_preds, all_labels = list(), list()
         log_interval = PARAMS['log_interval']
         total_loss = list()
@@ -74,15 +74,27 @@ class TrainerBase(abc.ABC):
                 self._optimizer.step()
                 if idx % log_interval == 0 and idx > 0:
                     elapsed = time.time() - start_time
-                    print('| elapsed {} | {:5d}/{:5d} batches | loss {:8.3f} '
-                          '| accuracy {:8.3f}'.format(elapsed, idx, len(dataloader), loss, total_acc / total_count))
-                    total_acc, total_count = 0, 0
+                    eval_preds = np.concatenate(eval_preds, axis=0)
+                    eval_labels = np.concatenate(eval_labels, axis=0)
+                    prf = precision_recall_fscore_support(eval_labels, eval_preds, average='binary')
+                    print(
+                        '| elapsed {} | {:5d}/{:5d} batches | loss {:8.3f} | '
+                        'valid accuracy {:8.3f} | precision {:8.3f} | '
+                        'recall {:8.3f} | f1-score {:8.3f}'.format(
+                            elapsed, idx, len(dataloader), loss, (eval_labels == eval_preds).mean(),
+                            prf[0], prf[1], prf[2]
+                        )
+                    )
+                    eval_preds, eval_labels = list(), list()
                     start_time = time.time()
             total_loss += [float(loss)]
             preds = (predicted_label > 0.5).squeeze(dim=-1)
-            all_preds += [preds.detach().cpu().numpy()]
-            all_labels += [label.detach().cpu().numpy()]
-            total_count += label.size(0)
+            p = preds.detach().cpu().numpy()
+            l = label.detach().cpu().numpy()
+            all_preds += [p]
+            all_labels += [l]
+            eval_preds += [p]
+            eval_labels += [l]
         all_preds = np.concatenate(all_preds, axis=0)
         all_labels = np.concatenate(all_labels, axis=0)
         prf = precision_recall_fscore_support(all_labels, all_preds, average='binary')
