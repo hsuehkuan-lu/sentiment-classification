@@ -39,7 +39,7 @@ def inference(bert_model, method='lstm'):
         )
         for idx, (label, text, offsets) in enumerate(tqdm(inference_dataloader)):
             predicted_label = model(text, offsets)
-            predicted_label = predicted_label.argmax(1)
+            predicted_label = predicted_label > 0.5
             all_preds += predicted_label.detach().cpu().numpy().tolist()
     df[PARAMS['label']] = all_preds
     return df
