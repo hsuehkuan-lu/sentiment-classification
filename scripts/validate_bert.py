@@ -26,7 +26,7 @@ def start_validating(bert_model, method='basic'):
     print(f"Train valid split")
     try:
         model_module = importlib.import_module(f'model.{bert_model}.{method}')
-        model = model_module.Model(**PARAMS[bert_model][method])
+        model = model_module.Model(**PARAMS[bert_model], **PARAMS[bert_model][method])
     except Exception as e:
         raise e
     if torch.cuda.is_available():
@@ -41,12 +41,16 @@ def start_validating(bert_model, method='basic'):
     except Exception as e:
         raise e
 
-    train_dataloader = DataFrameDataLoader(
+    try:
+        dataloader_module = importlib.import_module(f'data_loader.{bert_model}_dataloaders')
+    except Exception as e:
+        raise e
+    train_dataloader = dataloader_module.DataFrameDataLoader(
         train_df, pretrained_model=PARAMS[bert_model]['pretrained_model'],
         batch_size=PARAMS['validate']['batch_size'],
         shuffle=PARAMS['validate']['shuffle'], max_len=PARAMS[bert_model]['max_len']
     )
-    valid_dataloader = DataFrameDataLoader(
+    valid_dataloader = dataloader_module.DataFrameDataLoader(
         valid_df, pretrained_model=PARAMS[bert_model]['pretrained_model'],
         batch_size=PARAMS['validate']['batch_size'],
         shuffle=PARAMS['validate']['shuffle'], max_len=PARAMS[bert_model]['eval_max_len']

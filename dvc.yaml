@@ -30,6 +30,7 @@ stages:
       plots:
         - outputs/${item}_validate_plots.csv:
             cache: false
+
   validate_bert:
     foreach: # List of simple values
       - basic
@@ -50,6 +51,28 @@ stages:
       plots:
         - outputs/bert-${item}_validate_plots.csv:
             cache: false
+
+  validate_xlnet:
+    foreach: # List of simple values
+      - basic
+      - lstm
+    do:
+      cmd: python -m scripts.validate_bert xlnet ${item}
+      deps:
+        - data/train.csv
+        - scripts/validate_bert.py
+      params:
+        - xlnet.max_len
+        - xlnet.${item}
+        - xlnet.pretrained_model
+        - validate
+      metrics:
+        - outputs/xlnet-${item}_validate_results.json:
+            cache: false
+      plots:
+        - outputs/xlnet-${item}_validate_plots.csv:
+            cache: false
+
   train:
     foreach: # List of simple values
     - mlp
