@@ -288,3 +288,38 @@ stages:
     - path: outputs/bert-lstm_submission.csv
       md5: 9d080c140238e6adbeb7ef78c54ede21
       size: 419729
+  validate_xlnet@basic:
+    cmd: python -m scripts.validate_bert xlnet basic
+    deps:
+    - path: data/train.csv
+      md5: d0d12f53a232828404431f2416df09fe
+      size: 33430132
+    - path: scripts/validate_bert.py
+      md5: e162b3b5f8716c7dabfbb413c67652d3
+      size: 2719
+    params:
+      params.yaml:
+        validate:
+          batch_size: 32
+          shuffle: true
+          epochs: 4
+          kfold: 10
+          early_stops: 3
+          optimizer:
+            lr: 2e-05
+            step_lr: 2.0
+            gamma: 0.5
+            clip: 1.0
+            weight_decay: 0
+        xlnet.basic:
+          hidden_size: 768
+          dropout: 0.1
+        xlnet.max_len: 128
+        xlnet.pretrained_model: xlnet-base-cased
+    outs:
+    - path: outputs/xlnet-basic_validate_plots.csv
+      md5: cbd1798fb2ff1b073e4484db645d0279
+      size: 234
+    - path: outputs/xlnet-basic_validate_results.json
+      md5: 7a20d842aff14528b943e64ea6e52897
+      size: 155
