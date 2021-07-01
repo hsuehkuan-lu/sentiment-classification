@@ -19,7 +19,8 @@ class Model(ModelBase):
         x = self.bert(tokens, attention_mask=masks)
         x = torch.cat(tuple([x.hidden_states[i] for i in [-4, -3, -2, -1]]), dim=-1)
         # [CLS] for last 4 layers
-        x = x[:, 0, :]
+        # NOTE: XLNet is in the last index
+        x = x[:, -1, :]
         x = self.dropout(x)
         return self.out(x).sigmoid()
 

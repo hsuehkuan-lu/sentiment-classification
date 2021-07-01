@@ -68,8 +68,8 @@ def start_validating(bert_model, method='basic'):
 if __name__ == '__main__':
     bert_model, method = sys.argv[1], sys.argv[2]
     results, losses_df = start_validating(bert_model, method)
-    results_path = Path(os.getenv('OUTPUT_PATH'), f'bert-{method}_validate_{os.getenv("RESULTS_PATH")}')
+    results_path = Path(os.getenv('OUTPUT_PATH'), f'{bert_model}-{method}_validate_{os.getenv("RESULTS_PATH")}')
     with open(results_path, 'w') as f:
         json.dump(results, f)
-    plots_path = Path(os.getenv('OUTPUT_PATH'), f'bert-{method}_validate_{os.getenv("PLOTS_PATH")}')
+    plots_path = Path(os.getenv('OUTPUT_PATH'), f'{bert_model}-{method}_validate_{os.getenv("PLOTS_PATH")}')
     losses_df.to_csv(plots_path, index=False)

@@ -1,14 +1,12 @@
 import os
 import abc
 import time
-import json
 import yaml
 import torch
 import numpy as np
 from tqdm import tqdm
 from pathlib import Path
 from sklearn.metrics import precision_recall_fscore_support
-import torch.nn.functional as F
 from dotenv import load_dotenv
 
 load_dotenv('envs/.env')
