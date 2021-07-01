@@ -39,6 +39,7 @@ stages:
       cmd: python -m scripts.validate_bert bert ${item}
       deps:
         - data/train.csv
+        - model/bert/${item}.py
         - scripts/validate_bert.py
       params:
         - bert.max_len
@@ -60,6 +61,7 @@ stages:
       cmd: python -m scripts.validate_bert xlnet ${item}
       deps:
         - data/train.csv
+        - model/xlnet/${item}.py
         - scripts/validate_bert.py
       params:
         - xlnet.max_len
