@@ -4,10 +4,10 @@ import json
 import yaml
 import torch
 import importlib
+import numpy as np
 import pandas as pd
-from pathlib import Path
 from tqdm import tqdm
-from model import mlp, rnn
+from pathlib import Path
 from data_loader.data_loaders import DataFrameDataLoader
 from dotenv import load_dotenv
 
@@ -45,8 +45,9 @@ def inference(method='lstm'):
         )
         for idx, (label, text, offsets) in enumerate(tqdm(inference_dataloader)):
             predicted_label = model(text, offsets)
-            predicted_label = predicted_label > 0.5
-            all_preds += predicted_label.detach().cpu().numpy().tolist()
+            predicted_label = (predicted_label > 0.5).squeeze(dim=-1)
+            all_preds += [predicted_label.detach().cpu().numpy()]
+    all_preds = np.concatenate(all_preds, axis=0)
     df[PARAMS['label']] = all_preds
     return df
 

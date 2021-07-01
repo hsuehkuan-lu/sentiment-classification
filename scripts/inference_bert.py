@@ -3,8 +3,9 @@ import sys
 import yaml
 import torch
 import importlib
-from tqdm import tqdm
+import numpy as np
 import pandas as pd
+from tqdm import tqdm
 from pathlib import Path
 from data_loader.bert_dataloaders import DataFrameDataLoader
 from dotenv import load_dotenv
@@ -39,8 +40,9 @@ def inference(bert_model, method='lstm'):
         )
         for idx, (label, text, offsets) in enumerate(tqdm(inference_dataloader)):
             predicted_label = model(text, offsets)
-            predicted_label = predicted_label > 0.5
-            all_preds += predicted_label.detach().cpu().numpy().tolist()
+            predicted_label = (predicted_label > 0.5).squeeze(dim=-1)
+            all_preds += [predicted_label.detach().cpu().numpy()]
+    all_preds = np.concatenate(all_preds, axis=0)
     df[PARAMS['label']] = all_preds
     return df
 
