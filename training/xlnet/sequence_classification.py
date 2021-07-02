@@ -11,12 +11,6 @@ with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
 
 
-if torch.cuda.is_available():
-    DEVICE = torch.device('cuda', PARAMS.get('gpu', 0))
-else:
-    DEVICE = torch.device('cpu')
-
-
 class Trainer(TrainerBase):
     def __init__(self, model, mode):
         super(Trainer, self).__init__(model, mode)
@@ -42,7 +36,7 @@ class Trainer(TrainerBase):
                 self._optimizer.zero_grad()
             predicted_label = self._model(text, offsets)
             loss = self._criterion(
-                predicted_label, torch.nn.functional.one_hot(label, num_classes=2).to(DEVICE, dtype=torch.int64)
+                predicted_label, label
             )
             if is_training:
                 loss.backward()
