@@ -95,11 +95,10 @@ xlnet:
   max_len: 128
   eval_max_len: 128
   pretrained_model: xlnet-base-cased
+  bert_hidden_size: 768
   basic:
-    hidden_size: 768
     dropout: 0.1
   lstm:
-    bert_hidden_size: 768
     hidden_size: 512
     dropout: 0.1
     n_layers: 2
