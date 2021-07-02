@@ -318,8 +318,8 @@ stages:
         xlnet.pretrained_model: xlnet-base-cased
     outs:
     - path: outputs/xlnet-basic_validate_plots.csv
-      md5: cbd1798fb2ff1b073e4484db645d0279
-      size: 234
+      md5: 078516f43a751c7149d4e1b2b3200a5d
+      size: 232
     - path: outputs/xlnet-basic_validate_results.json
-      md5: 7a20d842aff14528b943e64ea6e52897
-      size: 155
+      md5: 011b99a5eaf6ec1ad0d3b649e7bd8c63
+      size: 154
