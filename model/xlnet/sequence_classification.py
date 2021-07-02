@@ -12,7 +12,7 @@ class Model(ModelBase):
         self.init_weights()
 
     def forward(self, tokens, masks=None):
-        return self.bert(tokens, attention_mask=masks)
+        return self.bert(tokens, attention_mask=masks).logits
         
     def load_model(self, model_path):
         self.load_state_dict(torch.load(model_path))
