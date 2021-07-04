@@ -33,15 +33,11 @@ class TrainerBase(abc.ABC):
         )
         self._dev_loss = None
         self._early_stops = 0
+        self.method = None
 
     def set_dataloader(self, train_dataloader, valid_dataloader=None):
         self._train_dataloader = train_dataloader
         self._valid_dataloader = valid_dataloader
-
-    @property
-    @abc.abstractmethod
-    def method(self):
-        raise NotImplementedError
 
     def save_model(self):
         model_path = Path(os.getenv('OUTPUT_PATH'), f'{self.method}_{os.getenv("MODEL_PATH")}')

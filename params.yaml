@@ -77,10 +77,10 @@ evaluate:
   batch_size: 64
 
 bert:
+  do_lower_case: true
   max_len: 128
-  eval_max_len: 128
+  eval_max_len: 512
   bert_hidden_size: 768
-  pretrained_model: bert-base-uncased
   basic:
     dropout: 0.1
   lstm:
@@ -88,15 +88,6 @@ bert:
     dropout: 0.1
     n_layers: 2
     attention_method: concat
-
-
-bert_large:
-  max_len: 128
-  eval_max_len: 512
-  pretrained_model: bert-large-uncased
-  bert_hidden_size: 1024
-  basic:
-    dropout: 0.1
 
 
 xlnet:

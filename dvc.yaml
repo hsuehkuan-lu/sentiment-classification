@@ -33,46 +33,28 @@ stages:
 
   validate_bert:
     foreach: # List of simple values
-      - basic
-      - lstm
+      bert-base-uncased_basic:
+        pretrained_model: bert-base-uncased
+        method: basic
+      bert-base-uncased_lstm:
+        pretrained_model: bert-base-uncased
+        method: lstm
     do:
-      cmd: python -m scripts.validate_bert bert ${item}
+      cmd: python -m scripts.validate_bert bert ${item.pretrained_model} ${item.method}
       deps:
         - data/train.csv
-        - model/bert/${item}.py
+        - model/bert/${item.method}.py
         - scripts/validate_bert.py
       params:
         - bert.max_len
-        - bert.${item}
-        - bert.pretrained_model
+        - bert.do_lower_case
+        - bert.${item.method}
         - validate
       metrics:
-        - outputs/bert-${item}_validate_results.json:
+        - outputs/bert-${item.pretrained_model}-${item.method}_validate_results.json:
             cache: false
       plots:
-        - outputs/bert-${item}_validate_plots.csv:
-            cache: false
-
-
-  validate_bert_large:
-    foreach: # List of simple values
-      - basic
-    do:
-      cmd: python -m scripts.validate_bert bert_large ${item}
-      deps:
-        - data/train.csv
-        - model/bert_large/${item}.py
-        - scripts/validate_bert.py
-      params:
-        - bert_large.max_len
-        - bert_large.${item}
-        - bert_large.pretrained_model
-        - validate
-      metrics:
-        - outputs/bert-large-${item}_validate_results.json:
-            cache: false
-      plots:
-        - outputs/bert-large-${item}_validate_plots.csv:
+        - outputs/bert-${item.pretrained_model}-${item.method}_validate_plots.csv:
             cache: false
 
   validate_xlnet:
