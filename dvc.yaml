@@ -78,7 +78,7 @@ stages:
   validate_xlnet:
     foreach: # List of simple values
       - basic
-      - lstm
+      - sequence_classification
     do:
       cmd: python -m scripts.validate_bert xlnet ${item}
       deps:
