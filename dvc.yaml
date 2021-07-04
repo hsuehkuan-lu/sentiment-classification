@@ -53,6 +53,28 @@ stages:
         - outputs/bert-${item}_validate_plots.csv:
             cache: false
 
+
+  validate_bert_large:
+    foreach: # List of simple values
+      - basic
+    do:
+      cmd: python -m scripts.validate_bert bert_large ${item}
+      deps:
+        - data/train.csv
+        - model/bert_large/${item}.py
+        - scripts/validate_bert.py
+      params:
+        - bert_large.max_len
+        - bert_large.${item}
+        - bert_large.pretrained_model
+        - validate
+      metrics:
+        - outputs/bert-large-${item}_validate_results.json:
+            cache: false
+      plots:
+        - outputs/bert-large-${item}_validate_plots.csv:
+            cache: false
+
   validate_xlnet:
     foreach: # List of simple values
       - basic
