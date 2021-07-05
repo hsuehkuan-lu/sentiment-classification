@@ -36,6 +36,7 @@ def start_validating(bert_model, pretrained_model, method='basic'):
     else:
         device = torch.device('cpu')
     model.to(device)
+    print(model)
 
     try:
         trainer = importlib.import_module(f'training.{bert_model}')\
