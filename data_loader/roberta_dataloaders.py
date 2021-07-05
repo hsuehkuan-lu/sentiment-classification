@@ -33,7 +33,7 @@ class DataFrameDataLoader(DataLoader):
             )
             text_list.append(encoded_dict['input_ids'])
             attention_masks.append(encoded_dict['attention_mask'])
-        label_list = torch.tensor(label_list, dtype=torch.float32)
+        label_list = torch.tensor(label_list, dtype=torch.int64)
         text_list = torch.cat(text_list, dim=0)
         attention_masks = torch.cat(attention_masks, dim=0)
         return label_list.to(DEVICE), text_list.to(DEVICE), attention_masks.to(DEVICE)

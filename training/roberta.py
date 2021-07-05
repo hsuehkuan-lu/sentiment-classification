@@ -11,6 +11,11 @@ from training.base import TrainerBase
 with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
 
+if torch.cuda.is_available():
+    DEVICE = torch.device('cuda', PARAMS.get('gpu', 0))
+else:
+    DEVICE = torch.device('cpu')
+
 
 class Trainer(TrainerBase):
     def __init__(self, model, pretrained_model, mode):
@@ -33,7 +38,7 @@ class Trainer(TrainerBase):
                 self._optimizer.zero_grad()
             predicted_label = self._model(text, offsets)
             loss = self._criterion(
-                predicted_label, F.one_hot(label, num_classes=2)
+                predicted_label, F.one_hot(label, num_classes=2).to(DEVICE, dtype=torch.float32)
             )
             if is_training:
                 loss.backward()
