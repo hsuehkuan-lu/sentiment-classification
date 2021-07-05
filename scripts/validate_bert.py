@@ -9,7 +9,6 @@ import pandas as pd
 from torch import nn
 from pathlib import Path
 from sklearn.model_selection import train_test_split
-from training.bert import Trainer
 from dotenv import load_dotenv
 
 load_dotenv('envs/.env')
@@ -38,7 +37,11 @@ def start_validating(bert_model, pretrained_model, method='basic'):
         device = torch.device('cpu')
     model.to(device)
 
-    trainer = Trainer(model, pretrained_model=pretrained_model, mode='validate')
+    try:
+        trainer = importlib.import_module(f'training.{bert_model}')\
+            .Trainer(model, pretrained_model=pretrained_model, mode='validate')
+    except Exception as e:
+        raise e
 
     try:
         dataloader_module = importlib.import_module(f'data_loader.{bert_model}_dataloaders')

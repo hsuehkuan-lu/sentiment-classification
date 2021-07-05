@@ -85,6 +85,29 @@ stages:
         - outputs/xlnet-${item}_validate_plots.csv:
             cache: false
 
+  validate_roberta:
+    foreach: # List of simple values
+      siebert/sentiment-roberta-large-english_sentiment:
+        pretrained_model: siebert/sentiment-roberta-large-english
+        method: sentiment
+    do:
+      cmd: python -m scripts.validate_bert roberta ${item.pretrained_model} ${item.method}
+      deps:
+        - data/train.csv
+        - model/roberta/${item.method}.py
+        - scripts/validate_bert.py
+      params:
+        - roberta.max_len
+        - roberta.do_lower_case
+        - roberta.${item.method}
+        - validate
+      metrics:
+        - outputs/roberta-${item.pretrained_model}-${item.method}_validate_results.json:
+            cache: false
+      plots:
+        - outputs/roberta-${item.pretrained_model}-${item.method}_validate_plots.csv:
+            cache: false
+
   train:
     foreach: # List of simple values
     - mlp
