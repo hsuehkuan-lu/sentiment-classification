@@ -12,10 +12,10 @@ class Model(ModelBase):
         super(Model, self).__init__()
         # [B x L] -> [B x L x D], [B x D]
         self.hidden_size = hidden_size
-        self.bert = BertModel.from_pretrained(pretrained_model, output_hidden_states=True)
+        self.bert = BertModel.from_pretrained(pretrained_model)
         self.dropout = nn.Dropout(dropout)
         self.lstm = nn.LSTM(
-            4 * bert_hidden_size, hidden_size, n_layers,
+            bert_hidden_size, hidden_size, n_layers,
             dropout=dropout, bidirectional=True
         )
         self.attn = Attention(2 * hidden_size, attention_method)
@@ -26,12 +26,11 @@ class Model(ModelBase):
         # BERT
         # [B x L x D], [B, D] (pooled_outputs)
         x = self.bert(tokens, attention_mask=masks)
-        x = torch.cat(tuple([x.hidden_states[i] for i in [-4, -3, -2, -1]]), dim=-1)
-        x, (hidden_state, _) = self.lstm(x.transpose(0, 1))
+        x, (hidden_state, _) = self.lstm(x.pooler_output.transpose(0, 1))
         hidden_state = hidden_state[-2:, :, :].view(1, -1, 2 * self.hidden_size).squeeze(0)
         attn_weights = self.attn(hidden_state, x)
         x = torch.bmm(attn_weights, x.transpose(0, 1)).squeeze(1)
-        return self.out(x).sigmoid()
+        return nn.Sigmoid()(self.out(x))
 
     def load_model(self, model_path):
         self.load_state_dict(torch.load(model_path))
@@ -43,7 +42,8 @@ class Model(ModelBase):
                 nn.init.orthogonal_(param.data)
             else:
                 nn.init.zeros_(param.data)
-        nn.init.xavier_normal_(self.out.weight)
+        initializer_range = 0.02
+        nn.init.normal_(self.out.weight, std=initializer_range)
         nn.init.constant_(self.out.bias, 0)
 
     def save_model(self, model_path):
