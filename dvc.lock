@@ -323,3 +323,40 @@ stages:
     - path: outputs/xlnet-basic_validate_results.json
       md5: 011b99a5eaf6ec1ad0d3b649e7bd8c63
       size: 154
+  validate_bert@bert-base-uncased_basic:
+    cmd: python -m scripts.validate_bert bert bert-base-uncased basic
+    deps:
+    - path: data/train.csv
+      md5: d0d12f53a232828404431f2416df09fe
+      size: 33430132
+    - path: model/bert/basic.py
+      md5: 7e5f25a5a50a46ea6c93949ce3fb861d
+      size: 1324
+    - path: scripts/validate_bert.py
+      md5: 20660b0b12c7342e4f7368d4ee146275
+      size: 2789
+    params:
+      params.yaml:
+        bert.basic:
+          dropout: 0.1
+        bert.do_lower_case: true
+        bert.max_len: 128
+        validate:
+          batch_size: 32
+          shuffle: true
+          epochs: 4
+          kfold: 10
+          early_stops: 3
+          optimizer:
+            lr: 2e-05
+            step_lr: 2.0
+            gamma: 0.5
+            clip: 1.0
+            weight_decay: 0
+    outs:
+    - path: outputs/bert-bert-base-uncased-basic_validate_plots.csv
+      md5: 195596b5c128026c2d7d1deddca5842c
+      size: 230
+    - path: outputs/bert-bert-base-uncased-basic_validate_results.json
+      md5: b929aa837f251b320db1660e94b8d723
+      size: 153
