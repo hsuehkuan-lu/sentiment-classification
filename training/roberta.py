@@ -33,7 +33,7 @@ class Trainer(TrainerBase):
                 self._optimizer.zero_grad()
             predicted_label = self._model(text, offsets)
             loss = self._criterion(
-                predicted_label, F.one_hot(label)
+                predicted_label, F.one_hot(label, num_classes=2)
             )
             if is_training:
                 loss.backward()
