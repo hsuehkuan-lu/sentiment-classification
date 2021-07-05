@@ -26,7 +26,7 @@ class Model(ModelBase):
         # BERT
         # [B x L x D], [B, D] (pooled_outputs)
         x = self.bert(tokens, attention_mask=masks)
-        x, (hidden_state, _) = self.lstm(x.pooler_output.transpose(0, 1))
+        x, (hidden_state, _) = self.lstm(x.last_hidden_state.transpose(0, 1))
         hidden_state = hidden_state[-2:, :, :].view(1, -1, 2 * self.hidden_size).squeeze(0)
         attn_weights = self.attn(hidden_state, x)
         x = torch.bmm(attn_weights, x.transpose(0, 1)).squeeze(1)
