@@ -397,3 +397,43 @@ stages:
     - path: outputs/bert-bert-large-uncased-basic_validate_results.json
       md5: 7df7cd93c728bd527170a51f6e34618c
       size: 156
+  validate_bert@bert-base-uncased_lstm:
+    cmd: python -m scripts.validate_bert bert bert-base-uncased lstm
+    deps:
+    - path: data/train.csv
+      md5: d0d12f53a232828404431f2416df09fe
+      size: 33430132
+    - path: model/bert/lstm.py
+      md5: 09610a8fecd1493281715631401a86a2
+      size: 1897
+    - path: scripts/validate_bert.py
+      md5: 20660b0b12c7342e4f7368d4ee146275
+      size: 2789
+    params:
+      params.yaml:
+        bert.do_lower_case: true
+        bert.lstm:
+          hidden_size: 768
+          dropout: 0.1
+          n_layers: 2
+          attention_method: concat
+        bert.max_len: 128
+        validate:
+          batch_size: 32
+          shuffle: true
+          epochs: 4
+          kfold: 10
+          early_stops: 3
+          optimizer:
+            lr: 2e-05
+            step_lr: 2.0
+            gamma: 0.5
+            clip: 1.0
+            weight_decay: 0
+    outs:
+    - path: outputs/bert-bert-base-uncased-lstm_validate_plots.csv
+      md5: aeea9348fc6e16aa332767a1bc5598be
+      size: 228
+    - path: outputs/bert-bert-base-uncased-lstm_validate_results.json
+      md5: 1810c78d585d2b3f8faf5e555232dfe1
+      size: 153

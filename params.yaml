@@ -1,5 +1,5 @@
 seed: 123
-gpu: 0
+gpu: 1
 log_interval: 500
 
 feature: review
@@ -61,7 +61,7 @@ train:
     weight_decay: 0
 
 validate:
-  batch_size: 16
+  batch_size: 32
   shuffle: true
   epochs: 4
   kfold: 10
@@ -80,11 +80,11 @@ bert:
   do_lower_case: true
   max_len: 128
   eval_max_len: 512
-  bert_hidden_size: 1024
+  bert_hidden_size: 768
   basic:
     dropout: 0.1
   lstm:
-    hidden_size: 512
+    hidden_size: 768
     dropout: 0.1
     n_layers: 2
     attention_method: concat
