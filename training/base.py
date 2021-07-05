@@ -70,17 +70,18 @@ class TrainerBase(abc.ABC):
                         '| elapsed {} | {:5d}/{:5d} batches | loss {:8.3f} | '
                         'valid accuracy {:8.3f} | precision {:8.3f} | '
                         'recall {:8.3f} | f1-score {:8.3f}'.format(
-                            elapsed, idx, len(dataloader), np.mean(eval_loss), (eval_labels == eval_preds).mean(),
+                            elapsed, idx, len(dataloader), np.mean(eval_loss), np.mean(eval_labels == eval_preds),
                             prf[0], prf[1], prf[2]
                         )
                     )
                     eval_preds, eval_labels = list(), list()
                     eval_loss = list()
                     start_time = time.time()
-            total_loss += [float(loss)]
-            eval_loss += [float(loss)]
-            preds = (predicted_label > 0.5).squeeze(dim=-1)
-            p = preds.detach().cpu().numpy()
+            loss_val = float(loss)
+            total_loss += [loss_val]
+            eval_loss += [loss_val]
+            predicted_label = (predicted_label > 0.5).squeeze(dim=-1)
+            p = predicted_label.detach().cpu().numpy()
             l = label.detach().cpu().numpy()
             all_preds += [p]
             all_labels += [l]
@@ -90,7 +91,7 @@ class TrainerBase(abc.ABC):
         all_labels = np.concatenate(all_labels, axis=0)
         prf = precision_recall_fscore_support(all_labels, all_preds, average='binary')
         return {
-            'accuracy': (all_preds == all_labels).mean(),
+            'accuracy': np.mean(all_preds == all_labels),
             'precision': prf[0],
             'recall': prf[1],
             'f1-score': prf[2],
