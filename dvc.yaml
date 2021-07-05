@@ -39,6 +39,9 @@ stages:
       bert-base-uncased_lstm:
         pretrained_model: bert-base-uncased
         method: lstm
+      bert-large-uncased_basic:
+        pretrained_model: bert-large-uncased
+        method: basic
     do:
       cmd: python -m scripts.validate_bert bert ${item.pretrained_model} ${item.method}
       deps:
