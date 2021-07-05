@@ -14,7 +14,4 @@ class Trainer(TrainerBase):
         self._scheduler = torch.optim.lr_scheduler.StepLR(
             self._optimizer, PARAMS[mode]['optimizer']['step_lr'], gamma=PARAMS[mode]['optimizer']['gamma']
         )
-
-    @property
-    def method(self):
-        return 'mlp'
+        self.method = 'mlp'

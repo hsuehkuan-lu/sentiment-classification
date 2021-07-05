@@ -16,7 +16,7 @@ def generate_vocabulary():
     counter = Counter()
     df = pd.read_csv('data/train.csv')
     for line in df[PARAMS['feature']]:
-        counter.update([''.join(list(filter(lambda x: x.isalnum(), [ch for ch in word]))) for word in tokenizer(line)])
+        counter.update([''.join(list(filter(lambda x: x.isalpha(), [ch for ch in word]))) for word in tokenizer(line)])
     del counter['']
     num_classes = len(set([label for label in df[PARAMS['label']]]))
     counter = Counter(dict(counter.most_common(PARAMS['basic']['vocab_size'])))
@@ -45,8 +45,8 @@ class Preprocessor(object):
 
     def text_pipeline(self, text):
         if isinstance(text, list):
-            return [[self._vocab[''.join(list(filter(lambda x: x.isalnum(), i)))] for i in tokenizer(t)] for t in text]
-        return [self._vocab[''.join(list(filter(lambda x: x.isalnum(), i)))] for i in tokenizer(text)]
+            return [[self._vocab[''.join(list(filter(lambda x: x.isalpha(), i)))] for i in tokenizer(t)] for t in text]
+        return [self._vocab[''.join(list(filter(lambda x: x.isalpha(), i)))] for i in tokenizer(text)]
 
     def label_pipeline(self, label):
         return label

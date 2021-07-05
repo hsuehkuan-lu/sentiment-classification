@@ -12,12 +12,12 @@ stages:
     params:
       params.yaml:
         basic:
-          vocab_size: 30000
+          vocab_size: 50000
           min_freq: 3
     outs:
     - path: outputs/vocab.plk
-      md5: 14284264890cd690d7bad61190b39ce0
-      size: 966319
+      md5: 23ba90394b758ae7f60257b9bc7d5506
+      size: 1494895
   inference@mlp:
     cmd: python -m scripts.inference mlp
     deps:
@@ -82,40 +82,40 @@ stages:
       md5: d0d12f53a232828404431f2416df09fe
       size: 33430132
     - path: outputs/config.json
-      md5: cdb8221e0e5eb1a11d5f25ff535fcc38
+      md5: 833365f54b55ee1829588de2567d1bf7
       size: 85
     - path: outputs/vocab.plk
-      md5: 14284264890cd690d7bad61190b39ce0
-      size: 966319
+      md5: 23ba90394b758ae7f60257b9bc7d5506
+      size: 1494895
     - path: scripts/validate.py
-      md5: 0e3aa787e0e2ae0f08dd8aa491d696d0
-      size: 3588
+      md5: 06be09580d4ce344e850a0c5aa8121b8
+      size: 2769
     params:
       params.yaml:
         mlp:
-          embed_dim: 50
+          embed_dim: 128
           use_bag: true
           hidden_size: 512
           dropout: 0.1
         validate:
-          batch_size: 64
+          batch_size: 256
           shuffle: true
-          epochs: 20
+          epochs: 5
           kfold: 10
           early_stops: 3
           optimizer:
-            lr: 1e-05
+            lr: 0.0001
             step_lr: 2.0
             gamma: 0.5
             clip: 1.0
-            weight_decay: 0.0001
+            weight_decay: 0
     outs:
     - path: outputs/mlp_validate_plots.csv
-      md5: 0592e05b4529a989c0f09b021c71362b
-      size: 9537
+      md5: cbc3bc78748e4f1cd5dba7747fa2684e
+      size: 279
     - path: outputs/mlp_validate_results.json
-      md5: b7e4f996e2dea315f050bed0fdf7acca
-      size: 127
+      md5: eb090e4414bdf9f238e8d215ed7601f6
+      size: 155
   validate@cnn:
     cmd: python -m scripts.validate cnn
     deps:

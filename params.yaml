@@ -11,7 +11,7 @@ eos_token: <eos>
 max_len: 512
 
 basic:
-  vocab_size: 30000
+  vocab_size: 50000
   min_freq: 3
 
 lstm:
@@ -25,7 +25,7 @@ lstm:
   max_len: 512
 
 mlp:
-  embed_dim: 50
+  embed_dim: 128
   use_bag: true
   hidden_size: 512
   dropout: 0.1
@@ -61,13 +61,13 @@ train:
     weight_decay: 0
 
 validate:
-  batch_size: 16
+  batch_size: 256
   shuffle: true
-  epochs: 4
+  epochs: 5
   kfold: 10
   early_stops: 3
   optimizer:
-    lr: 2e-5
+    lr: 1e-4
     step_lr: 2.0
     gamma: 0.5
     clip: 1.0

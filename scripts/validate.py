@@ -7,7 +7,7 @@ import importlib
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split
 from data_loader.data_loaders import DataFrameDataLoader
 from dotenv import load_dotenv
 import logging
@@ -35,70 +35,56 @@ with open(config_path, 'r') as f:
 
 
 def start_validating(method='lstm'):
-    kf = KFold(n_splits=PARAMS['validate']['kfold'], shuffle=True, random_state=PARAMS['seed'])
     df = pd.read_csv('data/train.csv')
-    total_results = list()
-    total_losses = list()
-    for idx, (train_index, valid_index) in enumerate(kf.split(df)):
-        print(f"Cross validation {idx}-fold")
-        try:
-            model_module = importlib.import_module(f'model.{method}')
-            model = model_module.Model(**CONFIG, **PARAMS[method])
-        except Exception as e:
-            raise e
-        if torch.cuda.is_available():
-            device = torch.device('cuda', PARAMS.get('gpu', 0))
-        else:
-            device = torch.device('cpu')
-        model.to(device)
+    train_df, valid_df = train_test_split(df, test_size=1. / PARAMS['validate']['kfold'], random_state=PARAMS['seed'])
 
-        try:
-            trainer_module = importlib.import_module(f'training.{method}')
-            trainer = trainer_module.Trainer(model, mode='validate')
-        except Exception as e:
-            raise e
+    print(f"Train valid split")
+    try:
+        model_module = importlib.import_module(f'model.{method}')
+        model = model_module.Model(**CONFIG, **PARAMS[method])
+    except Exception as e:
+        raise e
+    if torch.cuda.is_available():
+        device = torch.device('cuda', PARAMS.get('gpu', 0))
+    else:
+        device = torch.device('cpu')
+    model.to(device)
 
-        train_df = df.iloc[train_index]
-        valid_df = df.iloc[valid_index]
+    try:
+        trainer_module = importlib.import_module(f'training.{method}')
+        trainer = trainer_module.Trainer(model, mode='validate')
+    except Exception as e:
+        raise e
 
-        train_dataloader = DataFrameDataLoader(
-            train_df, batch_size=PARAMS['validate']['batch_size'],
-            shuffle=PARAMS['validate']['shuffle'], use_bag=PARAMS[method]['use_bag'],
-            use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
-        )
-        valid_dataloader = DataFrameDataLoader(
-            valid_df, batch_size=PARAMS['validate']['batch_size'],
-            shuffle=PARAMS['validate']['shuffle'], use_bag=PARAMS[method]['use_bag'],
-            use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
-        )
+    train_dataloader = DataFrameDataLoader(
+        train_df, batch_size=PARAMS['validate']['batch_size'],
+        shuffle=PARAMS['validate']['shuffle'], use_bag=PARAMS[method]['use_bag'],
+        use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
+    )
+    valid_dataloader = DataFrameDataLoader(
+        valid_df, batch_size=PARAMS['validate']['batch_size'],
+        shuffle=PARAMS['validate']['shuffle'], use_bag=PARAMS[method]['use_bag'],
+        use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
+    )
 
-        trainer.set_dataloader(train_dataloader, valid_dataloader)
+    trainer.set_dataloader(train_dataloader, valid_dataloader)
+    results, losses = trainer.validate()
 
-        results, losses = trainer.validate()
-        total_results.append(results)
-        for loss in losses:
-            loss['fold'] = idx + 1
-        total_losses += losses
-    print(total_losses)
-    columns = list(total_losses[0].keys())
-    total_losses_df = pd.DataFrame(total_losses, columns=columns)
+    columns = list(losses[0].keys())
+    losses_df = pd.DataFrame(losses, columns=columns)
 
-    average_results = dict()
-    for score in ('accuracy', 'precision', 'recall', 'f1-score'):
-        average_results[score] = np.mean([results[score] for results in total_results])
-    print(average_results)
-    return average_results, total_losses_df
+    return results, losses_df
 
 
 if __name__ == '__main__':
     method = sys.argv[1]
     try:
-        average_results, total_losses_df = start_validating(method)
+        results, losses_df = start_validating(method)
     except Exception as e:
         logging.error(e)
         raise e
     results_path = Path(os.getenv('OUTPUT_PATH'), f'{method}_validate_{os.getenv("RESULTS_PATH")}')
     with open(results_path, 'w') as f:
-        json.dump(average_results, f)
+        json.dump(results, f)
     plots_path = Path(os.getenv('OUTPUT_PATH'), f'{method}_validate_{os.getenv("PLOTS_PATH")}')
-    total_losses_df.to_csv(plots_path, index=False)
+    losses_df.to_csv(plots_path, index=False)
