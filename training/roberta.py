@@ -3,6 +3,7 @@ import yaml
 import torch
 import numpy as np
 from tqdm import tqdm
+from torch.nn import functional as F
 from sklearn.metrics import precision_recall_fscore_support
 from transformers import AdamW
 from training.base import TrainerBase
@@ -32,7 +33,7 @@ class Trainer(TrainerBase):
                 self._optimizer.zero_grad()
             predicted_label = self._model(text, offsets)
             loss = self._criterion(
-                predicted_label, label.unsqueeze(dim=-1)
+                predicted_label, F.one_hot(label)
             )
             if is_training:
                 loss.backward()
