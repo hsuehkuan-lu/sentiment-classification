@@ -3,7 +3,6 @@ import yaml
 import torch
 import numpy as np
 from tqdm import tqdm
-from torch.nn import functional as F
 from sklearn.metrics import precision_recall_fscore_support
 from transformers import AdamW
 from training.base import TrainerBase
@@ -20,6 +19,7 @@ else:
 class Trainer(TrainerBase):
     def __init__(self, model, pretrained_model, mode):
         super(Trainer, self).__init__(model, mode)
+        self._criterion = torch.nn.CrossEntropyLoss()
         self._optimizer = AdamW(self._model.parameters(), lr=float(PARAMS[mode]['optimizer']['lr']))
         self._scheduler = torch.optim.lr_scheduler.StepLR(
             self._optimizer, PARAMS[mode]['optimizer']['step_lr'], gamma=PARAMS[mode]['optimizer']['gamma']
