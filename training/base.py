@@ -70,13 +70,13 @@ class TrainerBase(abc.ABC):
                         '| elapsed {} | {:5d}/{:5d} batches | loss {:8.3f} | '
                         'valid accuracy {:8.3f} | precision {:8.3f} | '
                         'recall {:8.3f} | f1-score {:8.3f}'.format(
-                            elapsed, idx, len(dataloader), loss, (eval_labels == eval_preds).mean(),
+                            elapsed, idx, len(dataloader), loss.item(), (eval_labels == eval_preds).mean(),
                             prf[0], prf[1], prf[2]
                         )
                     )
                     eval_preds, eval_labels = list(), list()
                     start_time = time.time()
-            total_loss += [float(loss)]
+            total_loss += [loss.item()]
             preds = (predicted_label > 0.5).squeeze(dim=-1)
             p = preds.detach().cpu().numpy()
             l = label.detach().cpu().numpy()
