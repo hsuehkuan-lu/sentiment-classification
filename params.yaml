@@ -50,11 +50,11 @@ selected:
   dropout: 0.33
 
 train:
-  batch_size: 128
+  batch_size: 16
   shuffle: true
-  epochs: 10
+  epochs: 4
   optimizer:
-    lr: 1e-3
+    lr: 5e-5
     step_lr: 2.0
     gamma: 0.5
     clip: 1.0
