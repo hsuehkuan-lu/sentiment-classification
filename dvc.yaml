@@ -148,25 +148,25 @@ stages:
       bert-large-uncased_lstm:
         pretrained_model: bert-large-uncased
         method: lstm
-      do:
-        cmd: python -m scripts.train_bert bert ${item.pretrained_model} ${item.method}
-        deps:
-          - data/all.csv
-          - model/bert/${item.method}.py
-          - scripts/train_bert.py
-        params:
-          - bert.max_len
-          - bert.do_lower_case
-          - bert.${item.method}
-          - train
-        metrics:
-          - outputs/bert-${item.pretrained_model}-${item.method}_results.json:
-              cache: false
-        plots:
-          - outputs/bert-${item.pretrained_model}-${item.method}_plots.csv:
-              cache: false
-        outs:
-          - outputs/bert-${item.pretrained_model}-${item.method}_checkpoint.pth
+    do:
+      cmd: python -m scripts.train_bert bert ${item.pretrained_model} ${item.method}
+      deps:
+        - data/all.csv
+        - model/bert/${item.method}.py
+        - scripts/train_bert.py
+      params:
+        - bert.max_len
+        - bert.do_lower_case
+        - bert.${item.method}
+        - train
+      metrics:
+        - outputs/bert-${item.pretrained_model}-${item.method}_results.json:
+            cache: false
+      plots:
+        - outputs/bert-${item.pretrained_model}-${item.method}_plots.csv:
+            cache: false
+      outs:
+        - outputs/bert-${item.pretrained_model}-${item.method}_checkpoint.pth
 
   inference:
     foreach: # List of simple values
@@ -198,11 +198,11 @@ stages:
       bert-large-uncased_lstm:
         pretrained_model: bert-large-uncased
         method: lstm
-      do:
-        cmd: python -m scripts.inference_bert bert ${item.pretrained_model} ${item.method}
-        deps:
-          - data/test.csv
-          - scripts/inference_bert.py
-          - outputs/bert-${item.pretrained_model}-${item.method}_checkpoint.pth
-        outs:
-          - outputs/bert-${item.pretrained_model}-${item.method}_submission.csv
+    do:
+      cmd: python -m scripts.inference_bert bert ${item.pretrained_model} ${item.method}
+      deps:
+        - data/test.csv
+        - scripts/inference_bert.py
+        - outputs/bert-${item.pretrained_model}-${item.method}_checkpoint.pth
+      outs:
+        - outputs/bert-${item.pretrained_model}-${item.method}_submission.csv
