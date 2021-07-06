@@ -1,9 +1,9 @@
 import re
 import string
 import yaml
-from collections import Counter
+from collections import Counter, OrderedDict
 import pandas as pd
-from torchtext.vocab import Vocab
+import torchtext
 from torchtext.data.utils import get_tokenizer
 
 # Removing all punctuations from Text
@@ -63,11 +63,12 @@ def generate_vocabulary():
                         for word in tokenizer(preprocess_text(line))])
     del counter['']
     num_classes = len(set([label for label in df[PARAMS['label']]]))
-    counter = Counter(dict(counter.most_common(PARAMS['basic']['vocab_size'])))
-    vocab = Vocab(
-        counter, min_freq=PARAMS['basic']['min_freq'],
-        specials=(PARAMS['unk_token'], PARAMS['pad_token'], PARAMS['sos_token'], PARAMS['eos_token'])
-    )
+    sorted_by_freq_tuples = counter.most_common(PARAMS['basic']['vocab_size'])
+    specials = (PARAMS['unk_token'], PARAMS['pad_token'], PARAMS['sos_token'], PARAMS['eos_token'])
+    vocab = torchtext.vocab.vocab(OrderedDict(
+        [(tok, 1) for tok in specials] + sorted_by_freq_tuples
+    ))
+    vocab.set_default_index(0)
     config = {
         'vocab_size': len(vocab),
         'num_classes': num_classes,

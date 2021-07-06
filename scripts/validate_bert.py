@@ -19,7 +19,7 @@ with open('params.yaml', 'r') as f:
 
 
 def start_validating(bert_model, pretrained_model, method='basic'):
-    df = pd.read_csv('data/train.csv')
+    df = pd.read_csv('data/all.csv')
     train_df, valid_df = train_test_split(df, test_size=1. / PARAMS['validate']['kfold'], random_state=PARAMS['seed'])
 
     print(f"Train valid split")

@@ -3,9 +3,9 @@ stages:
   prepare:
     cmd: python -m scripts.prepare
     deps:
-    - path: data/train.csv
-      md5: d0d12f53a232828404431f2416df09fe
-      size: 33430132
+    - path: data/all.csv
+      md5: a79bcf8affd28ae57eee3fd38f872faa
+      size: 128402973
     - path: scripts/prepare.py
       md5: 20524be787ecc0bd3158a7a4cdaf20a7
       size: 477
@@ -16,8 +16,8 @@ stages:
           min_freq: 3
     outs:
     - path: outputs/vocab.plk
-      md5: 23ba90394b758ae7f60257b9bc7d5506
-      size: 1494895
+      md5: d1d7dd5445ea139f986675be21f6a4f9
+      size: 872687
   inference@mlp:
     cmd: python -m scripts.inference mlp
     deps:
@@ -25,18 +25,18 @@ stages:
       md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
       size: 33708755
     - path: outputs/config.json
-      md5: cdb8221e0e5eb1a11d5f25ff535fcc38
+      md5: b475a25ba02680cc35f445c7f4b571e9
       size: 85
     - path: outputs/mlp_checkpoint.pth
-      md5: 9699c2342b1409780088fd07edd0b70e
-      size: 7162613
+      md5: c8f1b04bc3483d118e98e0d16d8551b1
+      size: 26921043
     - path: scripts/inference.py
-      md5: 3824553fe72926fced071bd91ad71d90
-      size: 1921
+      md5: 6009800af49693dcf5ea45a0415b071b
+      size: 1970
     outs:
     - path: outputs/mlp_submission.csv
-      md5: 943c0f54813c561fe54980e1fc8d3111
-      size: 229245
+      md5: 0aa4619232a95963ad0a20f0c05ac446
+      size: 346609
   inference@lstm:
     cmd: python -m scripts.inference lstm
     deps:
@@ -437,3 +437,45 @@ stages:
     - path: outputs/bert-bert-base-uncased-lstm_validate_results.json
       md5: 1810c78d585d2b3f8faf5e555232dfe1
       size: 153
+  train@mlp:
+    cmd: python -m scripts.train mlp
+    deps:
+    - path: data/all.csv
+      md5: a79bcf8affd28ae57eee3fd38f872faa
+      size: 128402973
+    - path: outputs/config.json
+      md5: b475a25ba02680cc35f445c7f4b571e9
+      size: 85
+    - path: outputs/vocab.plk
+      md5: d1d7dd5445ea139f986675be21f6a4f9
+      size: 872687
+    - path: scripts/train.py
+      md5: 7b3a1274d34668bf18a68c91bd6a77aa
+      size: 2271
+    params:
+      params.yaml:
+        mlp:
+          embed_dim: 128
+          use_bag: true
+          hidden_size: 512
+          dropout: 0.1
+        train:
+          batch_size: 32
+          shuffle: true
+          epochs: 5
+          optimizer:
+            lr: 0.0001
+            step_lr: 2.0
+            gamma: 0.5
+            clip: 1.0
+            weight_decay: 0.0001
+    outs:
+    - path: outputs/mlp_checkpoint.pth
+      md5: c8f1b04bc3483d118e98e0d16d8551b1
+      size: 26921043
+    - path: outputs/mlp_plots.csv
+      md5: 004bd488697c454b63ea2bc1b6c3d9f2
+      size: 199
+    - path: outputs/mlp_results.json
+      md5: 1ede2d214304fae9ff1f82735bfce5dc
+      size: 95

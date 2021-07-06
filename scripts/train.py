@@ -52,7 +52,7 @@ def start_training(method='lstm'):
     except Exception as e:
         raise e
 
-    df = pd.read_csv('data/train.csv')
+    df = pd.read_csv('data/all.csv')
     dataloader = DataFrameDataLoader(
         df, batch_size=PARAMS['train']['batch_size'],
         shuffle=PARAMS['train']['shuffle'], use_bag=PARAMS[method]['use_bag'],

@@ -35,7 +35,7 @@ def start_training(bert_model, method='basic'):
     except Exception as e:
         raise e
 
-    df = pd.read_csv('data/train.csv')
+    df = pd.read_csv('data/all.csv')
     dataloader = DataFrameDataLoader(
         df, pretrained_model=PARAMS[bert_model]['pretrained_model'],
         batch_size=PARAMS['train']['batch_size'],
