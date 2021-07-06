@@ -15,6 +15,9 @@ stages:
           vocab_size: 50000
           min_freq: 3
     outs:
+    - path: outputs/config.json
+      md5: b475a25ba02680cc35f445c7f4b571e9
+      size: 85
     - path: outputs/vocab.plk
       md5: d1d7dd5445ea139f986675be21f6a4f9
       size: 872687
@@ -44,18 +47,18 @@ stages:
       md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
       size: 33708755
     - path: outputs/config.json
-      md5: cdb8221e0e5eb1a11d5f25ff535fcc38
+      md5: b475a25ba02680cc35f445c7f4b571e9
       size: 85
     - path: outputs/lstm_checkpoint.pth
-      md5: 785c2e464f3ef25054a7de19dc888835
-      size: 59488551
+      md5: fdc05da24348e77beda95b0cc2d0ffce
+      size: 69723667
     - path: scripts/inference.py
-      md5: 3824553fe72926fced071bd91ad71d90
-      size: 1980
+      md5: 6009800af49693dcf5ea45a0415b071b
+      size: 1970
     outs:
     - path: outputs/lstm_submission.csv
-      md5: 292a1e8932ab032a297633ad9eaa49d7
-      size: 258587
+      md5: 98bbc0400205ae607e65f8c302a7c1ee
+      size: 330692
   inference@cnn:
     cmd: python -m scripts.inference cnn
     deps:
@@ -479,3 +482,49 @@ stages:
     - path: outputs/mlp_results.json
       md5: 1ede2d214304fae9ff1f82735bfce5dc
       size: 95
+  train@lstm:
+    cmd: python -m scripts.train lstm
+    deps:
+    - path: data/all.csv
+      md5: a79bcf8affd28ae57eee3fd38f872faa
+      size: 128402973
+    - path: outputs/config.json
+      md5: b475a25ba02680cc35f445c7f4b571e9
+      size: 85
+    - path: outputs/vocab.plk
+      md5: d1d7dd5445ea139f986675be21f6a4f9
+      size: 872687
+    - path: scripts/train.py
+      md5: e24786983fccaa1a2d5a88a8f68d4256
+      size: 2261
+    params:
+      params.yaml:
+        lstm:
+          embed_dim: 128
+          use_bag: false
+          use_eos: true
+          attention_method: concat
+          hidden_size: 512
+          n_layers: 2
+          dropout: 0.1
+          max_len: 256
+        train:
+          batch_size: 128
+          shuffle: true
+          epochs: 5
+          optimizer:
+            lr: 0.0001
+            step_lr: 2.0
+            gamma: 0.5
+            clip: 1.0
+            weight_decay: 0.0001
+    outs:
+    - path: outputs/lstm_checkpoint.pth
+      md5: fdc05da24348e77beda95b0cc2d0ffce
+      size: 69723667
+    - path: outputs/lstm_plots.csv
+      md5: 7b6bcef6350556128ebdcbae5bb28713
+      size: 200
+    - path: outputs/lstm_results.json
+      md5: bbc7a3f6830727f4cfe44364dfef671a
+      size: 153

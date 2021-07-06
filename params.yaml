@@ -21,8 +21,8 @@ lstm:
   attention_method: concat
   hidden_size: 512
   n_layers: 2
-  dropout: 0.33
-  max_len: 512
+  dropout: 0.1
+  max_len: 256
 
 mlp:
   embed_dim: 128
@@ -50,7 +50,7 @@ selected:
   dropout: 0.33
 
 train:
-  batch_size: 32
+  batch_size: 128
   shuffle: true
   epochs: 5
   optimizer:
