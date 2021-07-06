@@ -52,13 +52,13 @@ selected:
 train:
   batch_size: 32
   shuffle: true
-  epochs: 4
+  epochs: 5
   optimizer:
-    lr: 2e-5
+    lr: 1e-4
     step_lr: 2.0
     gamma: 0.5
     clip: 1.0
-    weight_decay: 0
+    weight_decay: 1e-4
 
 validate:
   batch_size: 32

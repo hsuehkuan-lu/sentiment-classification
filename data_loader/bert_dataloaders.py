@@ -3,6 +3,7 @@ import torch
 from functools import partial
 from transformers import BertTokenizer
 from torch.utils.data import DataLoader
+from utils import preprocess
 
 with open('params.yaml', 'r') as f:
     PARAMS = yaml.safe_load(f)
@@ -27,7 +28,7 @@ class DataFrameDataLoader(DataLoader):
         for (_text, _label) in batch:
             label_list.append(_label)
             encoded_dict = self._tokenizer.encode_plus(
-                _text, add_special_tokens=True, max_length=max_len,
+                preprocess.preprocess_text(_text, remove_punc=False), add_special_tokens=True, max_length=max_len,
                 pad_to_max_length=True, return_attention_mask=True,
                 return_tensors='pt'
             )

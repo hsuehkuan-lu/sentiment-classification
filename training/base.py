@@ -21,7 +21,7 @@ else:
 
 
 class TrainerBase(abc.ABC):
-    def __init__(self, model, mode='train'):
+    def __init__(self, model, method, mode='train'):
         self.mode = mode
         self._train_dataloader = None
         self._valid_dataloader = None
@@ -33,7 +33,7 @@ class TrainerBase(abc.ABC):
         )
         self._dev_loss = None
         self._early_stops = 0
-        self.method = None
+        self.method = method
 
     def set_dataloader(self, train_dataloader, valid_dataloader=None):
         self._train_dataloader = train_dataloader

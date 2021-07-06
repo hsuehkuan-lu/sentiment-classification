@@ -3,7 +3,7 @@ stages:
     cmd: python -m scripts.prepare
     deps:
     - scripts/prepare.py
-    - data/train.csv
+    - data/all.csv
     params:
     - basic
     outs:
@@ -17,7 +17,7 @@ stages:
     do:
       cmd: python -m scripts.validate ${item}
       deps:
-        - data/train.csv
+        - data/all.csv
         - outputs/vocab.plk
         - outputs/config.json
         - scripts/validate.py
@@ -48,7 +48,7 @@ stages:
     do:
       cmd: python -m scripts.validate_bert bert ${item.pretrained_model} ${item.method}
       deps:
-        - data/train.csv
+        - data/all.csv
         - model/bert/${item.method}.py
         - scripts/validate_bert.py
       params:
@@ -70,7 +70,7 @@ stages:
     do:
       cmd: python -m scripts.validate_bert xlnet ${item}
       deps:
-        - data/train.csv
+        - data/all.csv
         - model/xlnet/${item}.py
         - scripts/validate_bert.py
       params:
@@ -94,7 +94,7 @@ stages:
     do:
       cmd: python -m scripts.train ${item}
       deps:
-      - data/train.csv
+      - data/all.csv
       - outputs/vocab.plk
       - outputs/config.json
       - scripts/train.py
@@ -117,7 +117,7 @@ stages:
     do:
       cmd: python -m scripts.train_bert bert ${item}
       deps:
-      - data/train.csv
+      - data/all.csv
       - scripts/train_bert.py
       params:
       - bert.max_len
