@@ -39,7 +39,7 @@ def start_training(bert_model, pretrained_model, method='basic'):
 
     df = pd.read_csv('data/all.csv')
     dataloader = DataFrameDataLoader(
-        df, pretrained_model=PARAMS[bert_model]['pretrained_model'],
+        df, pretrained_model=pretrained_model,
         do_lower_case=PARAMS[bert_model]['do_lower_case'],
         batch_size=PARAMS['train']['batch_size'],
         shuffle=PARAMS['validate']['shuffle'], max_len=PARAMS[bert_model]['max_len']

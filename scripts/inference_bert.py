@@ -38,7 +38,7 @@ def inference(bert_model, pretrained_model, method='lstm'):
     with torch.no_grad():
         all_preds = list()
         inference_dataloader = DataFrameDataLoader(
-            df, pretrained_model=PARAMS[bert_model]['pretrained_model'],
+            df, pretrained_model=pretrained_model,
             do_lower_case=PARAMS[bert_model]['do_lower_case'],
             batch_size=PARAMS['evaluate']['batch_size'], max_len=PARAMS[bert_model]['eval_max_len']
         )
