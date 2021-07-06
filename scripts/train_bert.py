@@ -8,6 +8,16 @@ import pandas as pd
 from pathlib import Path
 from data_loader.bert_dataloaders import DataFrameDataLoader
 from dotenv import load_dotenv
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("debug.log"),
+        logging.StreamHandler()
+    ]
+)
 
 load_dotenv('envs/.env')
 
@@ -55,7 +65,11 @@ def start_training(bert_model, pretrained_model, method='basic'):
 
 if __name__ == '__main__':
     bert_model, pretrained_model, method = sys.argv[1], sys.argv[2], sys.argv[3]
-    results, losses_df = start_training(bert_model, pretrained_model, method)
+    try:
+        results, losses_df = start_training(bert_model, pretrained_model, method)
+    except Exception as e:
+        logging.error(e)
+        raise e
     results_path = Path(
         os.getenv('OUTPUT_PATH'),
         f'{bert_model}-{pretrained_model}-{method}_{os.getenv("RESULTS_PATH")}'
