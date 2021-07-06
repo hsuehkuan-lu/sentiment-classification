@@ -63,8 +63,7 @@ def start_validating(method='lstm'):
     )
     valid_dataloader = DataFrameDataLoader(
         valid_df, batch_size=PARAMS['validate']['batch_size'],
-        shuffle=PARAMS['validate']['shuffle'], use_bag=PARAMS[method]['use_bag'],
-        use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
+        use_bag=PARAMS[method]['use_bag'], use_eos=PARAMS[method].get('use_eos'), max_len=PARAMS[method].get('max_len')
     )
 
     trainer.set_dataloader(train_dataloader, valid_dataloader)
