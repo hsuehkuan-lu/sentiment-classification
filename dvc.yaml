@@ -8,6 +8,7 @@ stages:
     - basic
     outs:
     - outputs/vocab.plk
+    - outputs/config.json
   validate:
     foreach: # List of simple values
       - mlp
