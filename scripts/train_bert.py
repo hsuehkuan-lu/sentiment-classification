@@ -43,7 +43,8 @@ def start_training(bert_model, pretrained_model, method='basic'):
 
     try:
         trainer_module = importlib.import_module(f'training.{bert_model}')
-        trainer = trainer_module.Trainer(model, pretrained_model=pretrained_model, mode='train')
+        bert_model_name = f'{bert_model}-{pretrained_model}-{method}'
+        trainer = trainer_module.Trainer(model, method=bert_model_name, mode='train')
     except Exception as e:
         raise e
 
