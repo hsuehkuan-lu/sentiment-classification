@@ -52,8 +52,8 @@ def inference(bert_model, pretrained_model, method='lstm'):
 
 
 if __name__ == '__main__':
-    bert_model, method = sys.argv[1], sys.argv[2]
-    df = inference(bert_model, method)
+    bert_model, pretrained_model, method = sys.argv[1], sys.argv[2], sys.argv[3]
+    df = inference(bert_model, pretrained_model, method)
     df = df[['ID', PARAMS['label']]]
-    submission_path = Path(os.getenv('OUTPUT_PATH'), f'{bert_model}-{method}_{os.getenv("SUBMISSION_PATH")}')
+    submission_path = Path(os.getenv('OUTPUT_PATH'), f'{bert_model}-{pretrained_model}-{method}_{os.getenv("SUBMISSION_PATH")}')
     df.to_csv(submission_path, index=False)
