@@ -58,7 +58,7 @@ train:
     step_lr: 2.0
     gamma: 0.5
     clip: 1.0
-    weight_decay: 1e-4
+    weight_decay: 1e-5
 
 validate:
   batch_size: 32
@@ -110,6 +110,6 @@ roberta:
   do_lower_case: true
   max_len: 128
   eval_max_len: 512
-  bert_hidden_size: 768
-  sentiment:
+  bert_hidden_size: 1024
+  basic:
     dropout: 0.1

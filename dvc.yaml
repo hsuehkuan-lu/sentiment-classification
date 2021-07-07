@@ -168,6 +168,34 @@ stages:
       outs:
         - outputs/bert-${item.pretrained_model}-${item.method}_checkpoint.pth
 
+  train_roberta:
+    foreach: # List of simple values
+      roberta-base_basic:
+        pretrained_model: roberta-base
+        method: basic
+      roberta-large_basic:
+        pretrained_model: roberta-large
+        method: basic
+    do:
+      cmd: python -m scripts.train_bert roberta ${item.pretrained_model} ${item.method}
+      deps:
+        - data/all.csv
+        - model/roberta/${item.method}.py
+        - scripts/train_bert.py
+      params:
+        - roberta.max_len
+        - roberta.do_lower_case
+        - roberta.${item.method}
+        - train
+      metrics:
+        - outputs/roberta-${item.pretrained_model}-${item.method}_results.json:
+            cache: false
+      plots:
+        - outputs/roberta-${item.pretrained_model}-${item.method}_plots.csv:
+            cache: false
+      outs:
+        - outputs/roberta-${item.pretrained_model}-${item.method}_checkpoint.pth
+
   inference:
     foreach: # List of simple values
     - mlp
@@ -206,3 +234,20 @@ stages:
         - outputs/bert-${item.pretrained_model}-${item.method}_checkpoint.pth
       outs:
         - outputs/bert-${item.pretrained_model}-${item.method}_submission.csv
+
+  inference_roberta:
+    foreach: # List of simple values
+      roberta-base_basic:
+        pretrained_model: roberta-base
+        method: basic
+      roberta-large_basic:
+        pretrained_model: roberta-large
+        method: basic
+    do:
+      cmd: python -m scripts.inference_bert roberta ${item.pretrained_model} ${item.method}
+      deps:
+        - data/test.csv
+        - scripts/inference_bert.py
+        - outputs/roberta-${item.pretrained_model}-${item.method}_checkpoint.pth
+      outs:
+        - outputs/roberta-${item.pretrained_model}-${item.method}_submission.csv
