@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from pathlib import Path
-from data_loader.bert_dataloaders import DataFrameDataLoader
 from dotenv import load_dotenv
 
 load_dotenv('envs/.env')
@@ -34,10 +33,14 @@ def inference(bert_model, pretrained_model, method='lstm'):
     model.to(device)
 
     df = pd.read_csv('data/test.csv')
+    try:
+        dataloader_module = importlib.import_module(f'data_loader.{bert_model}_dataloaders')
+    except Exception as e:
+        raise e
     df[PARAMS['label']] = 0
     with torch.no_grad():
         all_preds = list()
-        inference_dataloader = DataFrameDataLoader(
+        inference_dataloader = dataloader_module.DataFrameDataLoader(
             df, pretrained_model=pretrained_model,
             do_lower_case=PARAMS[bert_model]['do_lower_case'],
             batch_size=PARAMS['evaluate']['batch_size'], max_len=PARAMS[bert_model]['eval_max_len']
