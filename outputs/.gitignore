@@ -12,3 +12,5 @@
 /cnn_checkpoint.pth
 /bert-lstm_checkpoint.pth
 /bert-lstm_submission.csv
+/bert-bert-large-uncased-basic_checkpoint.pth
+/bert-bert-large-uncased-basic_submission.csv

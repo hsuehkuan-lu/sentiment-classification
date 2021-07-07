@@ -528,3 +528,57 @@ stages:
     - path: outputs/lstm_results.json
       md5: bbc7a3f6830727f4cfe44364dfef671a
       size: 153
+  train_bert@bert-large-uncased_basic:
+    cmd: python -m scripts.train_bert bert bert-large-uncased basic
+    deps:
+    - path: data/all.csv
+      md5: a79bcf8affd28ae57eee3fd38f872faa
+      size: 128402973
+    - path: model/bert/basic.py
+      md5: 7e5f25a5a50a46ea6c93949ce3fb861d
+      size: 1324
+    - path: scripts/train_bert.py
+      md5: 4ba03138d877f6f38a86941290b57dbe
+      size: 2514
+    params:
+      params.yaml:
+        bert.basic:
+          dropout: 0.1
+        bert.do_lower_case: true
+        bert.max_len: 128
+        train:
+          batch_size: 16
+          shuffle: true
+          epochs: 4
+          optimizer:
+            lr: 1e-05
+            step_lr: 2.0
+            gamma: 0.5
+            clip: 1.0
+            weight_decay: 0.0001
+    outs:
+    - path: outputs/bert-bert-large-uncased-basic_checkpoint.pth
+      md5: f40ab022c89742710955b5c7733cb866
+      size: 1344932329
+    - path: outputs/bert-bert-large-uncased-basic_plots.csv
+      md5: 36a656a69e9045210fb74db7d3154538
+      size: 166
+    - path: outputs/bert-bert-large-uncased-basic_results.json
+      md5: 18e16fb594057a2c4926499aa49d6a0e
+      size: 155
+  inference_bert@bert-large-uncased_basic:
+    cmd: python -m scripts.inference_bert bert bert-large-uncased basic
+    deps:
+    - path: data/test.csv
+      md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
+      size: 33708755
+    - path: outputs/bert-bert-large-uncased-basic_checkpoint.pth
+      md5: f40ab022c89742710955b5c7733cb866
+      size: 1344932329
+    - path: scripts/inference_bert.py
+      md5: d5b171f34e217e480d336e92222a1ded
+      size: 2152
+    outs:
+    - path: outputs/bert-bert-large-uncased-basic_submission.csv
+      md5: db157ccf248b56a4cac176e95085188b
+      size: 229245
