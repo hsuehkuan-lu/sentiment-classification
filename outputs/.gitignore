@@ -14,3 +14,5 @@
 /bert-lstm_submission.csv
 /bert-bert-large-uncased-basic_checkpoint.pth
 /bert-bert-large-uncased-basic_submission.csv
+/roberta-roberta-large-basic_checkpoint.pth
+/roberta-roberta-large-basic_submission.csv
