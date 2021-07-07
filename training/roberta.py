@@ -24,7 +24,7 @@ class Trainer(TrainerBase):
         self._scheduler = torch.optim.lr_scheduler.StepLR(
             self._optimizer, PARAMS[mode]['optimizer']['step_lr'], gamma=PARAMS[mode]['optimizer']['gamma']
         )
-        self.method = f'{model}-{pretrained_model}-{mode}'
+        self.method = f'roberta-{pretrained_model}-{mode}'
 
     def _run_epoch(self, dataloader, is_training=True):
         eval_preds, eval_labels = list(), list()
