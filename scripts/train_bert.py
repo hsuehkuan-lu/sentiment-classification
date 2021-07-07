@@ -6,7 +6,6 @@ import torch
 import importlib
 import pandas as pd
 from pathlib import Path
-from data_loader.bert_dataloaders import DataFrameDataLoader
 from dotenv import load_dotenv
 import logging
 
@@ -49,7 +48,11 @@ def start_training(bert_model, pretrained_model, method='basic'):
         raise e
 
     df = pd.read_csv('data/all.csv')
-    dataloader = DataFrameDataLoader(
+    try:
+        dataloader_module = importlib.import_module(f'data_loader.{bert_model}_dataloaders')
+    except Exception as e:
+        raise e
+    dataloader = dataloader_module.DataFrameDataLoader(
         df, pretrained_model=pretrained_model,
         do_lower_case=PARAMS[bert_model]['do_lower_case'],
         batch_size=PARAMS['train']['batch_size'],
