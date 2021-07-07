@@ -21,10 +21,9 @@ else:
 
 
 class TrainerBase(abc.ABC):
-    def __init__(self, model, method, mode='train'):
+    def __init__(self, model, dataloader, method, mode='train'):
         self.mode = mode
-        self._train_dataloader = None
-        self._valid_dataloader = None
+        self._dataloader = dataloader
         self._model = model
         self._criterion = torch.nn.BCELoss()
         self._optimizer = torch.optim.SGD(self._model.parameters(), lr=float(PARAMS[mode]['optimizer']['lr']))
@@ -35,22 +34,18 @@ class TrainerBase(abc.ABC):
         self._early_stops = 0
         self.method = method
 
-    def set_dataloader(self, train_dataloader, valid_dataloader=None):
-        self._train_dataloader = train_dataloader
-        self._valid_dataloader = valid_dataloader
-
     def save_model(self):
         model_path = Path(os.getenv('OUTPUT_PATH'), f'{self.method}_{os.getenv("MODEL_PATH")}')
         self._model.save_model(model_path)
 
-    def _run_epoch(self, dataloader, is_training=True):
+    def _run_epoch(self, is_training=True):
         eval_preds, eval_labels = list(), list()
         all_preds, all_labels = list(), list()
         log_interval = PARAMS['log_interval']
         total_loss, eval_loss = list(), list()
         start_time = time.time()
 
-        for idx, (label, text, offsets) in enumerate(tqdm(dataloader)):
+        for idx, (label, text, offsets) in enumerate(tqdm(self._dataloader)):
             if is_training:
                 self._optimizer.zero_grad()
             predicted_label = self._model(text, offsets)
@@ -61,6 +56,7 @@ class TrainerBase(abc.ABC):
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self._model.parameters(), PARAMS[self.mode]['optimizer']['clip'])
                 self._optimizer.step()
+                self._scheduler.step()
                 if idx % log_interval == 0 and idx > 0:
                     elapsed = time.time() - start_time
                     eval_preds = np.concatenate(eval_preds, axis=0)
@@ -70,7 +66,7 @@ class TrainerBase(abc.ABC):
                         '| elapsed {} | {:5d}/{:5d} batches | loss {:8.3f} | '
                         'valid accuracy {:8.3f} | precision {:8.3f} | '
                         'recall {:8.3f} | f1-score {:8.3f}'.format(
-                            elapsed, idx, len(dataloader), np.mean(eval_loss), np.mean(eval_labels == eval_preds),
+                            elapsed, idx, len(self._dataloader), np.mean(eval_loss), np.mean(eval_labels == eval_preds),
                             prf[0], prf[1], prf[2]
                         )
                     )
@@ -100,7 +96,7 @@ class TrainerBase(abc.ABC):
 
     def _train_epoch(self):
         self._model.train()
-        return self._run_epoch(self._train_dataloader)
+        return self._run_epoch()
 
     def validate(self):
         best_results = dict()
@@ -118,7 +114,6 @@ class TrainerBase(abc.ABC):
             })
             if total_f1 is not None and total_f1 > eval_results['f1-score']:
                 self._early_stops += 1
-                self._scheduler.step()
             else:
                 self._early_stops = 0
                 total_f1 = eval_results['f1-score']
@@ -156,7 +151,6 @@ class TrainerBase(abc.ABC):
                 self._early_stops += 1
                 if self._early_stops == PARAMS[self.mode]['early_stops']:
                     break
-                self._scheduler.step()
             else:
                 self._early_stops = 0
                 total_f1 = results['f1-score']
@@ -178,4 +172,4 @@ class TrainerBase(abc.ABC):
         self._model.eval()
 
         with torch.no_grad():
-            return self._run_epoch(self._valid_dataloader, is_training=False)
+            return self._run_epoch(is_training=False)

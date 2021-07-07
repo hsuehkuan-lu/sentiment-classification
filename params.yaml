@@ -55,7 +55,7 @@ train:
   epochs: 4
   optimizer:
     lr: 1e-5
-    step_lr: 2.0
+    step_lr: 500
     gamma: 0.5
     clip: 1.0
     weight_decay: 1e-5
@@ -68,7 +68,7 @@ validate:
   early_stops: 3
   optimizer:
     lr: 1e-4
-    step_lr: 2.0
+    step_lr: 500
     gamma: 0.5
     clip: 1.0
     weight_decay: 0

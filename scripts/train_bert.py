@@ -40,13 +40,6 @@ def start_training(bert_model, pretrained_model, method='basic'):
         device = torch.device('cpu')
     model.to(device)
 
-    try:
-        trainer_module = importlib.import_module(f'training.{bert_model}')
-        bert_model_name = f'{bert_model}-{pretrained_model}-{method}'
-        trainer = trainer_module.Trainer(model, method=bert_model_name, mode='train')
-    except Exception as e:
-        raise e
-
     df = pd.read_csv('data/all.csv')
     try:
         dataloader_module = importlib.import_module(f'data_loader.{bert_model}_dataloaders')
@@ -58,7 +51,14 @@ def start_training(bert_model, pretrained_model, method='basic'):
         batch_size=PARAMS['train']['batch_size'],
         shuffle=PARAMS['validate']['shuffle'], max_len=PARAMS[bert_model]['max_len']
     )
-    trainer.set_dataloader(dataloader)
+
+    try:
+        trainer_module = importlib.import_module(f'training.{bert_model}')
+        bert_model_name = f'{bert_model}-{pretrained_model}-{method}'
+        trainer = trainer_module.Trainer(model, dataloader, method=bert_model_name, mode='train')
+    except Exception as e:
+        raise e
+
     results, losses = trainer.train()
 
     columns = list(losses[0].keys())
