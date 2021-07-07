@@ -32,9 +32,10 @@ class Model(ModelBase):
         self.eval()
 
     def init_weights(self):
-        nn.init.xavier_normal_(self.fc.weight)
+        initializer_range = 0.02
+        nn.init.normal_(self.fc.weight, std=initializer_range)
         nn.init.constant_(self.fc.bias, 0)
-        nn.init.xavier_normal_(self.out.weight)
+        nn.init.normal_(self.out.weight, std=initializer_range)
         nn.init.constant_(self.out.bias, 0)
 
     def save_model(self, model_path):

@@ -54,7 +54,7 @@ train:
   shuffle: true
   epochs: 4
   optimizer:
-    lr: 5e-5
+    lr: 2e-5
     step_lr: 500
     gamma: 0.5
     clip: 1.0
@@ -91,19 +91,12 @@ bert:
 
 
 xlnet:
+  do_lower_case: true
   max_len: 128
   eval_max_len: 512
-  pretrained_model: xlnet-base-cased
-  bert_hidden_size: 768
+  bert_hidden_size: 1024
   basic:
     dropout: 0.1
-  sequence_classification:
-    dropout: 0.1
-  lstm:
-    hidden_size: 512
-    dropout: 0.1
-    n_layers: 2
-    attention_method: concat
 
 
 roberta:

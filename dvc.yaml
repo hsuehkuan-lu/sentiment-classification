@@ -168,6 +168,34 @@ stages:
       outs:
         - outputs/bert-${item.pretrained_model}-${item.method}_checkpoint.pth
 
+  train_xlnet:
+    foreach: # List of simple values
+      xlnet-base_basic:
+        pretrained_model: xlnet-base-cased
+        method: basic
+      xlnet-large_basic:
+        pretrained_model: xlnet-large-cased
+        method: basic
+    do:
+      cmd: python -m scripts.train_bert xlnet ${item.pretrained_model} ${item.method}
+      deps:
+        - data/all.csv
+        - model/xlnet/${item.method}.py
+        - scripts/train_bert.py
+      params:
+        - xlnet.max_len
+        - xlnet.do_lower_case
+        - xlnet.${item.method}
+        - train
+      metrics:
+        - outputs/xlnet-${item.pretrained_model}-${item.method}_results.json:
+            cache: false
+      plots:
+        - outputs/xlnet-${item.pretrained_model}-${item.method}_plots.csv:
+            cache: false
+      outs:
+        - outputs/xlnet-${item.pretrained_model}-${item.method}_checkpoint.pth
+
   train_roberta:
     foreach: # List of simple values
       roberta-base_basic:
@@ -234,6 +262,23 @@ stages:
         - outputs/bert-${item.pretrained_model}-${item.method}_checkpoint.pth
       outs:
         - outputs/bert-${item.pretrained_model}-${item.method}_submission.csv
+
+  inference_xlnet:
+    foreach: # List of simple values
+      xlnet-base_basic:
+        pretrained_model: xlnet-base-cased
+        method: basic
+      xlnet-large_basic:
+        pretrained_model: xlnet-large-cased
+        method: basic
+    do:
+      cmd: python -m scripts.inference_bert xlnet ${item.pretrained_model} ${item.method}
+      deps:
+        - data/test.csv
+        - scripts/inference_bert.py
+        - outputs/xlnet-${item.pretrained_model}-${item.method}_checkpoint.pth
+      outs:
+        - outputs/xlnet-${item.pretrained_model}-${item.method}_submission.csv
 
   inference_roberta:
     foreach: # List of simple values
