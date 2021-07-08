@@ -52,7 +52,8 @@ selected:
 train:
   batch_size: 8
   shuffle: true
-  epochs: 4
+  epochs: 6
+  early_stops: 2
   optimizer:
     lr: 2e-5
     step_lr: 500
@@ -74,7 +75,7 @@ validate:
     weight_decay: 0
 
 evaluate:
-  batch_size: 128
+  batch_size: 64
 
 bert:
   do_lower_case: true
