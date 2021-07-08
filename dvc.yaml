@@ -170,10 +170,10 @@ stages:
 
   train_xlnet:
     foreach: # List of simple values
-      xlnet-base_basic:
+      xlnet-base-cased_basic:
         pretrained_model: xlnet-base-cased
         method: basic
-      xlnet-large_basic:
+      xlnet-large-cased_basic:
         pretrained_model: xlnet-large-cased
         method: basic
     do:
@@ -265,10 +265,10 @@ stages:
 
   inference_xlnet:
     foreach: # List of simple values
-      xlnet-base_basic:
+      xlnet-base-cased_basic:
         pretrained_model: xlnet-base-cased
         method: basic
-      xlnet-large_basic:
+      xlnet-large-cased_basic:
         pretrained_model: xlnet-large-cased
         method: basic
     do:
