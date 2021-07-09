@@ -538,8 +538,8 @@ stages:
       md5: 7e5f25a5a50a46ea6c93949ce3fb861d
       size: 1324
     - path: scripts/train_bert.py
-      md5: 4ba03138d877f6f38a86941290b57dbe
-      size: 2514
+      md5: 4cfa4bacc4a848148004d0bf3e63e0be
+      size: 2590
     params:
       params.yaml:
         bert.basic:
@@ -549,23 +549,24 @@ stages:
         train:
           batch_size: 16
           shuffle: true
-          epochs: 4
+          epochs: 6
+          early_stops: 2
           optimizer:
-            lr: 1e-05
-            step_lr: 2.0
+            lr: 2e-05
+            step_lr: 500
             gamma: 0.5
             clip: 1.0
-            weight_decay: 0.0001
+            weight_decay: 1e-05
     outs:
     - path: outputs/bert-bert-large-uncased-basic_checkpoint.pth
-      md5: f40ab022c89742710955b5c7733cb866
+      md5: 75275b0a961a2bd92cdb993950f1bde4
       size: 1344932329
     - path: outputs/bert-bert-large-uncased-basic_plots.csv
-      md5: 36a656a69e9045210fb74db7d3154538
-      size: 166
+      md5: 002f5ca93ac087d9599c08cf9dc08fc7
+      size: 311
     - path: outputs/bert-bert-large-uncased-basic_results.json
-      md5: 18e16fb594057a2c4926499aa49d6a0e
-      size: 155
+      md5: a9dbe5b64885bc0435757c23e412ee5c
+      size: 157
   inference_bert@bert-large-uncased_basic:
     cmd: python -m scripts.inference_bert bert bert-large-uncased basic
     deps:
@@ -573,14 +574,14 @@ stages:
       md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
       size: 33708755
     - path: outputs/bert-bert-large-uncased-basic_checkpoint.pth
-      md5: f40ab022c89742710955b5c7733cb866
+      md5: 75275b0a961a2bd92cdb993950f1bde4
       size: 1344932329
     - path: scripts/inference_bert.py
-      md5: d5b171f34e217e480d336e92222a1ded
-      size: 2152
+      md5: dd331f744ebee45890ca3a8106bf48dd
+      size: 2254
     outs:
     - path: outputs/bert-bert-large-uncased-basic_submission.csv
-      md5: db157ccf248b56a4cac176e95085188b
+      md5: 65246e6c1ce04f64e8e10f3f4de06600
       size: 229245
   train_roberta@roberta-large_basic:
     cmd: python -m scripts.train_bert roberta roberta-large basic
