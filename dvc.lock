@@ -593,8 +593,8 @@ stages:
       md5: 2c8632ca917584d6f8799ebe1483cb92
       size: 1330
     - path: scripts/train_bert.py
-      md5: e9744fb568895f037d5c954e55701a0b
-      size: 2616
+      md5: 4cfa4bacc4a848148004d0bf3e63e0be
+      size: 2590
     params:
       params.yaml:
         roberta.basic:
@@ -604,23 +604,24 @@ stages:
         train:
           batch_size: 16
           shuffle: true
-          epochs: 4
+          epochs: 6
+          early_stops: 2
           optimizer:
-            lr: 1e-05
-            step_lr: 2.0
+            lr: 2e-05
+            step_lr: 500
             gamma: 0.5
             clip: 1.0
             weight_decay: 1e-05
     outs:
     - path: outputs/roberta-roberta-large-basic_checkpoint.pth
-      md5: d2f26de40d37f85ebd5011d0a42bfc23
+      md5: 32746b7a10b19bb892ec3a032da549f0
       size: 1425803817
     - path: outputs/roberta-roberta-large-basic_plots.csv
-      md5: f969458b8cadb68c526a1094b45e5b61
-      size: 168
+      md5: 4cc8f9cf64e867b116dac693ad45d686
+      size: 312
     - path: outputs/roberta-roberta-large-basic_results.json
-      md5: f656fffc08f902f2aab74d6ef08ee851
-      size: 155
+      md5: 40b071c1cdcd5956174a353ff6184fb3
+      size: 153
   inference_roberta@roberta-large_basic:
     cmd: python -m scripts.inference_bert roberta roberta-large basic
     deps:
@@ -628,14 +629,14 @@ stages:
       md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
       size: 33708755
     - path: outputs/roberta-roberta-large-basic_checkpoint.pth
-      md5: d2f26de40d37f85ebd5011d0a42bfc23
+      md5: 32746b7a10b19bb892ec3a032da549f0
       size: 1425803817
     - path: scripts/inference_bert.py
       md5: dd331f744ebee45890ca3a8106bf48dd
       size: 2254
     outs:
     - path: outputs/roberta-roberta-large-basic_submission.csv
-      md5: 36e82c242cd4f1195cf6e38b0d487728
+      md5: ab7d6928f5b468080b464df4282708cc
       size: 229245
   train_xlnet@xlnet-large-cased_basic:
     cmd: python -m scripts.train_bert xlnet xlnet-large-cased basic
