@@ -50,7 +50,7 @@ selected:
   dropout: 0.33
 
 train:
-  batch_size: 8
+  batch_size: 16
   shuffle: true
   epochs: 6
   early_stops: 2
