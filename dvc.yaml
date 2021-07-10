@@ -304,9 +304,9 @@ stages:
     deps:
       - scripts/ensemble.py
       - data/test.csv
-      - outputs/bert-bert-large-uncased_checkpoint.pth
-      - outputs/roberta-roberta-large_checkpoint.pth
-      - outputs/xlnet-xlnet-large-cased_checkpoint.pth
+      - outputs/bert-bert-large-uncased-basic_checkpoint.pth
+      - outputs/roberta-roberta-large-basic_checkpoint.pth
+      - outputs/xlnet-xlnet-large-cased-basic_checkpoint.pth
     params:
       - evaluate
     outs:
