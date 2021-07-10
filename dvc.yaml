@@ -290,6 +290,8 @@ stages:
         method: basic
     do:
       cmd: python -m scripts.inference_bert roberta ${item.pretrained_model} ${item.method}
+      params:
+        - roberta.eval_max_len
       deps:
         - data/test.csv
         - scripts/inference_bert.py

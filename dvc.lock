@@ -634,9 +634,12 @@ stages:
     - path: scripts/inference_bert.py
       md5: dd331f744ebee45890ca3a8106bf48dd
       size: 2254
+    params:
+      params.yaml:
+        roberta.eval_max_len: 128
     outs:
     - path: outputs/roberta-roberta-large-basic_submission.csv
-      md5: ab7d6928f5b468080b464df4282708cc
+      md5: eeb427d0f74d71bdfd9ec76dc54a3f84
       size: 229245
   train_xlnet@xlnet-large-cased_basic:
     cmd: python -m scripts.train_bert xlnet xlnet-large-cased basic
