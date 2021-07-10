@@ -80,7 +80,7 @@ evaluate:
 bert:
   do_lower_case: true
   max_len: 128
-  eval_max_len: 512
+  eval_max_len: 128
   bert_hidden_size: 1024
   basic:
     dropout: 0.1
@@ -94,7 +94,7 @@ bert:
 xlnet:
   do_lower_case: true
   max_len: 128
-  eval_max_len: 512
+  eval_max_len: 128
   bert_hidden_size: 1024
   basic:
     dropout: 0.1
