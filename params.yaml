@@ -119,3 +119,14 @@ roberta:
     dropout: 0.1
     hidden_size: 1024
     kernel_size: 3
+
+
+albert:
+  do_lower_case: true
+  max_len: 128
+  eval_max_len: 128
+  bert_hidden_size: 2048
+  cnn:
+    dropout: 0
+    hidden_size: 2048
+    kernel_size: 3

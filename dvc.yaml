@@ -230,6 +230,31 @@ stages:
       outs:
         - outputs/roberta-${item.pretrained_model}-${item.method}_checkpoint.pth
 
+  train_albert:
+    foreach: # List of simple values
+      albert-xlarge-v2_cnn:
+        pretrained_model: albert-xlarge-v2
+        method: cnn
+    do:
+      cmd: python -m scripts.train_bert albert ${item.pretrained_model} ${item.method}
+      deps:
+        - data/all.csv
+        - model/albert/${item.method}.py
+        - scripts/train_bert.py
+      params:
+        - albert.max_len
+        - albert.do_lower_case
+        - albert.${item.method}
+        - train
+      metrics:
+        - outputs/albert-${item.pretrained_model}-${item.method}_results.json:
+            cache: false
+      plots:
+        - outputs/albert-${item.pretrained_model}-${item.method}_plots.csv:
+            cache: false
+      outs:
+        - outputs/albert-${item.pretrained_model}-${item.method}_checkpoint.pth
+
   inference:
     foreach: # List of simple values
     - mlp
@@ -310,6 +335,22 @@ stages:
         - outputs/roberta-${item.pretrained_model}-${item.method}_checkpoint.pth
       outs:
         - outputs/roberta-${item.pretrained_model}-${item.method}_submission.csv
+
+  inference_albert:
+    foreach: # List of simple values
+      albert-xlarge-v2_cnn:
+        pretrained_model: albert-xlarge-v2
+        method: cnn
+    do:
+      cmd: python -m scripts.inference_bert albert ${item.pretrained_model} ${item.method}
+      params:
+        - albert.eval_max_len
+      deps:
+        - data/test.csv
+        - scripts/inference_bert.py
+        - outputs/albert-${item.pretrained_model}-${item.method}_checkpoint.pth
+      outs:
+        - outputs/albert-${item.pretrained_model}-${item.method}_submission.csv
 
   ensemble:
     cmd: python -m scripts.ensemble
