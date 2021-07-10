@@ -56,12 +56,12 @@ def inference(bert_model, pretrained_model, method='lstm'):
 
 
 if __name__ == '__main__':
+    xlnet_df = inference('xlnet', 'xlnet-large-cased', 'basic')
+    xlnet_df = xlnet_df[['ID', PARAMS['label']]]
     bert_df = inference('bert', 'bert-large-uncased', 'basic')
     bert_df = bert_df[['ID', PARAMS['label']]]
     roberta_df = inference('roberta', 'roberta-large', 'basic')
     roberta_df = roberta_df[['ID', PARAMS['label']]]
-    xlnet_df = inference('xlnet', 'xlnet-large-cased', 'basic')
-    xlnet_df = xlnet_df[['ID', PARAMS['label']]]
 
     df = reduce(
         lambda left, right: pd.merge(left, right, on='ID', how='left'),
