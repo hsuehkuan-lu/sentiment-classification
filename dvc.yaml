@@ -179,6 +179,9 @@ stages:
       xlnet-large-cased_basic:
         pretrained_model: xlnet-large-cased
         method: basic
+      xlnet-large-cased_cnn:
+        pretrained_model: xlnet-large-cased
+        method: cnn
     do:
       cmd: python -m scripts.train_bert xlnet ${item.pretrained_model} ${item.method}
       deps:
@@ -305,6 +308,9 @@ stages:
       xlnet-large-cased_basic:
         pretrained_model: xlnet-large-cased
         method: basic
+      xlnet-large-cased_cnn:
+        pretrained_model: xlnet-large-cased
+        method: cnn
     do:
       cmd: python -m scripts.inference_bert xlnet ${item.pretrained_model} ${item.method}
       deps:
