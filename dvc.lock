@@ -696,3 +696,29 @@ stages:
     - path: outputs/xlnet-xlnet-large-cased-basic_submission.csv
       md5: 0bed9eb6bb98e18658641303f5059919
       size: 229245
+  ensemble:
+    cmd: python -m scripts.ensemble
+    deps:
+    - path: data/test.csv
+      md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
+      size: 33708755
+    - path: outputs/bert-bert-large-uncased-basic_checkpoint.pth
+      md5: 75275b0a961a2bd92cdb993950f1bde4
+      size: 1344932329
+    - path: outputs/roberta-roberta-large-basic_checkpoint.pth
+      md5: 32746b7a10b19bb892ec3a032da549f0
+      size: 1425803817
+    - path: outputs/xlnet-xlnet-large-cased-basic_checkpoint.pth
+      md5: 99ac993f83fb9e03f20c72b61ebe5e0b
+      size: 1445421701
+    - path: scripts/ensemble.py
+      md5: 75c167d8c71730b367a538b95b6a851c
+      size: 2504
+    params:
+      params.yaml:
+        evaluate:
+          batch_size: 128
+    outs:
+    - path: outputs/ensemble.csv
+      md5: e638fc8a4eed6d2e166ffd6c74f7f04f
+      size: 1212474

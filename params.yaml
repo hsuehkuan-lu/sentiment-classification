@@ -75,7 +75,7 @@ validate:
     weight_decay: 0
 
 evaluate:
-  batch_size: 64
+  batch_size: 128
 
 bert:
   do_lower_case: true
