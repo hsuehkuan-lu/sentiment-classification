@@ -148,6 +148,9 @@ stages:
       bert-large-uncased_lstm:
         pretrained_model: bert-large-uncased
         method: lstm
+      bert-large-uncased_cnn:
+        pretrained_model: bert-large-uncased
+        method: cnn
     do:
       cmd: python -m scripts.train_bert bert ${item.pretrained_model} ${item.method}
       deps:
@@ -204,6 +207,9 @@ stages:
       roberta-large_basic:
         pretrained_model: roberta-large
         method: basic
+      roberta-large_cnn:
+        pretrained_model: roberta-large
+        method: cnn
     do:
       cmd: python -m scripts.train_bert roberta ${item.pretrained_model} ${item.method}
       deps:
