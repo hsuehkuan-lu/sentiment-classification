@@ -298,3 +298,16 @@ stages:
         - outputs/roberta-${item.pretrained_model}-${item.method}_checkpoint.pth
       outs:
         - outputs/roberta-${item.pretrained_model}-${item.method}_submission.csv
+
+  ensemble:
+    cmd: python -m scripts.ensemble
+    deps:
+      - scripts/ensemble.py
+      - data/test.csv
+      - outputs/bert-bert-large-uncased_checkpoint.pth
+      - outputs/roberta-roberta-large_checkpoint.pth
+      - outputs/xlnet-xlnet-large-cased_checkpoint.pth
+    params:
+      - evaluate
+    outs:
+      - outputs/ensemble.csv
