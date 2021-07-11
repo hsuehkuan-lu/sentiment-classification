@@ -19,3 +19,5 @@
 /xlnet-xlnet-large-cased-basic_checkpoint.pth
 /xlnet-xlnet-large-cased-basic_submission.csv
 /ensemble.csv
+/roberta-roberta-large-cnn_checkpoint.pth
+/roberta-roberta-large-cnn_submission.csv

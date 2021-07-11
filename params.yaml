@@ -50,7 +50,7 @@ selected:
   dropout: 0.33
 
 train:
-  batch_size: 32
+  batch_size: 16
   shuffle: true
   epochs: 6
   early_stops: 2
@@ -75,7 +75,7 @@ validate:
     weight_decay: 0
 
 evaluate:
-  batch_size: 128
+  batch_size: 64
 
 bert:
   do_lower_case: true
