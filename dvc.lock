@@ -839,3 +839,60 @@ stages:
     - path: outputs/roberta-roberta-large-cnn_submission.csv
       md5: 89cf8c60730f6d3ba63f4aec4a82838b
       size: 229245
+  train_xlnet@xlnet-large-cased_cnn:
+    cmd: python -m scripts.train_bert xlnet xlnet-large-cased cnn
+    deps:
+    - path: data/all.csv
+      md5: a79bcf8affd28ae57eee3fd38f872faa
+      size: 128402973
+    - path: model/xlnet/cnn.py
+      md5: 8b84a28dd591bfe84ab1171c5d053708
+      size: 1559
+    - path: scripts/train_bert.py
+      md5: 4cfa4bacc4a848148004d0bf3e63e0be
+      size: 2590
+    params:
+      params.yaml:
+        train:
+          batch_size: 8
+          shuffle: true
+          epochs: 6
+          early_stops: 2
+          optimizer:
+            lr: 2e-05
+            step_lr: 500
+            gamma: 0.5
+            clip: 1.0
+            weight_decay: 1e-05
+        xlnet.cnn:
+          dropout: 0.1
+          hidden_size: 1024
+          kernel_size: 3
+        xlnet.do_lower_case: true
+        xlnet.max_len: 128
+    outs:
+    - path: outputs/xlnet-xlnet-large-cased-cnn_checkpoint.pth
+      md5: d68d28074ee53c79be038367b79050b4
+      size: 1453828347
+    - path: outputs/xlnet-xlnet-large-cased-cnn_plots.csv
+      md5: 317f320e8fd70396656d321a560fb7a5
+      size: 312
+    - path: outputs/xlnet-xlnet-large-cased-cnn_results.json
+      md5: f76ee3e885f7c6570f47a76f6856ab7e
+      size: 155
+  inference_xlnet@xlnet-large-cased_cnn:
+    cmd: python -m scripts.inference_bert xlnet xlnet-large-cased cnn
+    deps:
+    - path: data/test.csv
+      md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
+      size: 33708755
+    - path: outputs/xlnet-xlnet-large-cased-cnn_checkpoint.pth
+      md5: d68d28074ee53c79be038367b79050b4
+      size: 1453828347
+    - path: scripts/inference_bert.py
+      md5: dd331f744ebee45890ca3a8106bf48dd
+      size: 2254
+    outs:
+    - path: outputs/xlnet-xlnet-large-cased-cnn_submission.csv
+      md5: d315f9b5c206f15d7bb913ac662a6b8f
+      size: 229245
