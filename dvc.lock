@@ -896,3 +896,63 @@ stages:
     - path: outputs/xlnet-xlnet-large-cased-cnn_submission.csv
       md5: d315f9b5c206f15d7bb913ac662a6b8f
       size: 229245
+  train_albert@albert-xlarge-v2_cnn:
+    cmd: python -m scripts.train_bert albert albert-xlarge-v2 cnn
+    deps:
+    - path: data/all.csv
+      md5: a79bcf8affd28ae57eee3fd38f872faa
+      size: 128402973
+    - path: model/albert/cnn.py
+      md5: 0d74b0e337e36b9d1773c96be4075d16
+      size: 1561
+    - path: scripts/train_bert.py
+      md5: 4cfa4bacc4a848148004d0bf3e63e0be
+      size: 2590
+    params:
+      params.yaml:
+        albert.cnn:
+          dropout: 0
+          hidden_size: 2048
+          kernel_size: 3
+        albert.do_lower_case: true
+        albert.max_len: 128
+        train:
+          batch_size: 8
+          shuffle: true
+          epochs: 6
+          early_stops: 2
+          optimizer:
+            lr: 2e-05
+            step_lr: 500
+            gamma: 0.5
+            clip: 1.0
+            weight_decay: 1e-05
+    outs:
+    - path: outputs/albert-albert-xlarge-v2-cnn_checkpoint.pth
+      md5: 351b134909cefa5683a452ff6ee2694a
+      size: 285297404
+    - path: outputs/albert-albert-xlarge-v2-cnn_plots.csv
+      md5: ce868bde9f81e2987d7bce4ee5e5af46
+      size: 312
+    - path: outputs/albert-albert-xlarge-v2-cnn_results.json
+      md5: f31adfa1ca3bfc022eda51deeff20f30
+      size: 156
+  inference_albert@albert-xlarge-v2_cnn:
+    cmd: python -m scripts.inference_bert albert albert-xlarge-v2 cnn
+    deps:
+    - path: data/test.csv
+      md5: 8ba62e41af40f5b5f9e9ed83e5ee3f2a
+      size: 33708755
+    - path: outputs/albert-albert-xlarge-v2-cnn_checkpoint.pth
+      md5: 351b134909cefa5683a452ff6ee2694a
+      size: 285297404
+    - path: scripts/inference_bert.py
+      md5: dd331f744ebee45890ca3a8106bf48dd
+      size: 2254
+    params:
+      params.yaml:
+        albert.eval_max_len: 128
+    outs:
+    - path: outputs/albert-albert-xlarge-v2-cnn_submission.csv
+      md5: 58c5a4fcc43a194b2cbbfe015f540387
+      size: 229245

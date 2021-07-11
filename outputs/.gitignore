@@ -25,3 +25,5 @@
 /roberta-roberta-large-cnn_submission.csv
 /xlnet-xlnet-large-cased-cnn_checkpoint.pth
 /xlnet-xlnet-large-cased-cnn_submission.csv
+/albert-albert-xlarge-v2-cnn_checkpoint.pth
+/albert-albert-xlarge-v2-cnn_submission.csv
