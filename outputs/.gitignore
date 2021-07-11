@@ -21,3 +21,5 @@
 /ensemble.csv
 /bert-bert-large-uncased-cnn_checkpoint.pth
 /bert-bert-large-uncased-cnn_submission.csv
+/roberta-roberta-large-cnn_checkpoint.pth
+/roberta-roberta-large-cnn_submission.csv
