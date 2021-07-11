@@ -19,3 +19,5 @@
 /xlnet-xlnet-large-cased-basic_checkpoint.pth
 /xlnet-xlnet-large-cased-basic_submission.csv
 /ensemble.csv
+/bert-bert-large-uncased-cnn_checkpoint.pth
+/bert-bert-large-uncased-cnn_submission.csv
